@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stream_menu_title">Pelivalikko</string>
+    <string name="stream_menu_stats">Tilastot</string>
+    <string name="stream_menu_display_mode">Näyttö</string>
+    <string name="stream_display_mode_fit">Sovita</string>
+    <string name="stream_display_mode_zoom">Zoomaa</string>
+    <string name="stream_display_mode_stretch">Venytä</string>
+    <string name="stream_menu_resume">Jatka peliä</string>
+    <string name="stream_menu_quit">Lopeta peli</string>
+    <string name="stream_menu_hint">A: OK, B: sulje</string>
+    <string name="stream_connecting_title">Yhdistetään: %1$s...</string>
+    <string name="stream_connecting_hint">Peruuta painamalla Takaisin</string>
+    <string name="stream_stats_format">%1$s fps | %2$s Mbit/s | %3$s ms | dekoodaus %4$s ms | häviö %5$s %%</string>
+    <string name="stream_stats_diag_ok">Diagnoosi: OK</string>
+    <string name="stream_stats_diag_network">Diagnoosi: verkko</string>
+    <string name="stream_stats_diag_decoder">Diagnoosi: dekooderi</string>
+    <string name="stream_menu_sleep">Aseta konsoli lepotilaan</string>
+</resources>

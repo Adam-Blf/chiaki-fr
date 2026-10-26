@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stream_menu_title">游戏菜单</string>
+    <string name="stream_menu_stats">统计</string>
+    <string name="stream_menu_display_mode">显示</string>
+    <string name="stream_display_mode_fit">适应</string>
+    <string name="stream_display_mode_zoom">缩放</string>
+    <string name="stream_display_mode_stretch">拉伸</string>
+    <string name="stream_menu_resume">继续游戏</string>
+    <string name="stream_menu_quit">退出游戏</string>
+    <string name="stream_menu_hint">A：确定，B：关闭</string>
+    <string name="stream_connecting_title">正在连接 %1$s...</string>
+    <string name="stream_connecting_hint">按返回键取消</string>
+    <string name="stream_stats_format">%1$s fps | %2$s Mbit/s | %3$s ms | 解码 %4$s ms | 丢包 %5$s %%</string>
+    <string name="stream_stats_diag_ok">诊断：正常</string>
+    <string name="stream_stats_diag_network">诊断：网络</string>
+    <string name="stream_stats_diag_decoder">诊断：解码器</string>
+    <string name="stream_menu_sleep">让主机进入待机</string>
+</resources>

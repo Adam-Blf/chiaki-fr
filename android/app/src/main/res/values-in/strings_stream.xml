@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stream_menu_title">Menu game</string>
+    <string name="stream_menu_stats">Statistik</string>
+    <string name="stream_menu_display_mode">Tampilan</string>
+    <string name="stream_display_mode_fit">Pas</string>
+    <string name="stream_display_mode_zoom">Zoom</string>
+    <string name="stream_display_mode_stretch">Regang</string>
+    <string name="stream_menu_resume">Lanjutkan game</string>
+    <string name="stream_menu_quit">Keluar game</string>
+    <string name="stream_menu_hint">A: OK, B: tutup</string>
+    <string name="stream_connecting_title">Menghubungkan ke %1$s...</string>
+    <string name="stream_connecting_hint">Tekan Kembali untuk batal</string>
+    <string name="stream_stats_format">%1$s fps | %2$s Mbit/s | %3$s ms | dekode %4$s ms | hilang %5$s %%</string>
+    <string name="stream_stats_diag_ok">Diagnosis: OK</string>
+    <string name="stream_stats_diag_network">Diagnosis: jaringan</string>
+    <string name="stream_stats_diag_decoder">Diagnosis: dekoder</string>
+    <string name="stream_menu_sleep">Istirahatkan konsol</string>
+</resources>

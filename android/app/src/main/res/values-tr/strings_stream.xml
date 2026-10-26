@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stream_menu_title">Oyun menüsü</string>
+    <string name="stream_menu_stats">İstatistikler</string>
+    <string name="stream_menu_display_mode">Görüntü</string>
+    <string name="stream_display_mode_fit">Sığdır</string>
+    <string name="stream_display_mode_zoom">Yakınlaştır</string>
+    <string name="stream_display_mode_stretch">Uzat</string>
+    <string name="stream_menu_resume">Oyuna devam et</string>
+    <string name="stream_menu_quit">Oyundan çık</string>
+    <string name="stream_menu_hint">A: Tamam, B: kapat</string>
+    <string name="stream_connecting_title">%1$s konsoluna bağlanılıyor...</string>
+    <string name="stream_connecting_hint">İptal için Geri\'ye basın</string>
+    <string name="stream_stats_format">%1$s fps | %2$s Mbit/s | %3$s ms | kod çözme %4$s ms | kayıp %5$s %%</string>
+    <string name="stream_stats_diag_ok">Tanı: Tamam</string>
+    <string name="stream_stats_diag_network">Tanı: ağ</string>
+    <string name="stream_stats_diag_decoder">Tanı: kod çözücü</string>
+    <string name="stream_menu_sleep">Konsolu dinlenme moduna al</string>
+</resources>

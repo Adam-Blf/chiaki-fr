@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stream_menu_title">Spelmenu</string>
+    <string name="stream_menu_stats">Statistieken</string>
+    <string name="stream_menu_display_mode">Weergave</string>
+    <string name="stream_display_mode_fit">Passend</string>
+    <string name="stream_display_mode_zoom">Zoom</string>
+    <string name="stream_display_mode_stretch">Uitrekken</string>
+    <string name="stream_menu_resume">Verder spelen</string>
+    <string name="stream_menu_quit">Spel stoppen</string>
+    <string name="stream_menu_hint">A: OK, B: sluiten</string>
+    <string name="stream_connecting_title">Verbinden met %1$s...</string>
+    <string name="stream_connecting_hint">Druk op Terug om te annuleren</string>
+    <string name="stream_stats_format">%1$s fps | %2$s Mbit/s | %3$s ms | decoderen %4$s ms | verlies %5$s %%</string>
+    <string name="stream_stats_diag_ok">Diagnose: OK</string>
+    <string name="stream_stats_diag_network">Diagnose: netwerk</string>
+    <string name="stream_stats_diag_decoder">Diagnose: decoder</string>
+    <string name="stream_menu_sleep">Console in rustmodus zetten</string>
+</resources>

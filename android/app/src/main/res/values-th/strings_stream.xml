@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stream_menu_title">เมนูเกม</string>
+    <string name="stream_menu_stats">สถิติ</string>
+    <string name="stream_menu_display_mode">การแสดงผล</string>
+    <string name="stream_display_mode_fit">พอดีจอ</string>
+    <string name="stream_display_mode_zoom">ซูม</string>
+    <string name="stream_display_mode_stretch">ยืด</string>
+    <string name="stream_menu_resume">เล่นต่อ</string>
+    <string name="stream_menu_quit">ออกจากเกม</string>
+    <string name="stream_menu_hint">A: ตกลง, B: ปิด</string>
+    <string name="stream_connecting_title">กำลังเชื่อมต่อ %1$s...</string>
+    <string name="stream_connecting_hint">กดย้อนกลับเพื่อยกเลิก</string>
+    <string name="stream_stats_format">%1$s fps | %2$s Mbit/s | %3$s ms | ถอดรหัส %4$s ms | สูญหาย %5$s %%</string>
+    <string name="stream_stats_diag_ok">วินิจฉัย: ปกติ</string>
+    <string name="stream_stats_diag_network">วินิจฉัย: เครือข่าย</string>
+    <string name="stream_stats_diag_decoder">วินิจฉัย: ตัวถอดรหัส</string>
+    <string name="stream_menu_sleep">ให้เครื่องเข้าโหมดพัก</string>
+</resources>
