@@ -60,7 +60,20 @@ class MainActivity : TvActivity()
 		val recyclerViewAdapter = DisplayHostRecyclerViewAdapter(this::hostTriggered, this::showHostActions)
 		binding.hostsRecyclerView.adapter = recyclerViewAdapter
 		// One horizontal row of tiles, like a game row
-		binding.hostsRecyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
+		binding.hostsRecyclerView.layoutManager = object: LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
+		{
+			// Left on the first tile and right on the last one stay put, instead of jumping to the header buttons
+			override fun onInterceptFocusSearch(focused: View, direction: Int): View?
+			{
+				val position = getPosition(findContainingItemView(focused) ?: return null)
+				return when
+				{
+					direction == View.FOCUS_LEFT && position == 0 -> focused
+					direction == View.FOCUS_RIGHT && position == itemCount - 1 -> focused
+					else -> null
+				}
+			}
+		}
 		// A cross-fade replaces the view holder, and the focused card would lose the focus with it
 		(binding.hostsRecyclerView.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
 		viewModel.displayHosts.observe(this, Observer {
