@@ -12,7 +12,8 @@ import android.widget.Toast
 import androidx.core.view.doOnLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.metallic.chiaki.R
@@ -27,7 +28,6 @@ import com.metallic.chiaki.manualconsole.EditManualConsoleActivity
 import com.metallic.chiaki.regist.RegistActivity
 import com.metallic.chiaki.settings.SettingsActivity
 import com.metallic.chiaki.stream.StreamActivity
-import kotlin.math.max
 
 class MainActivity : TvActivity()
 {
@@ -59,11 +59,12 @@ class MainActivity : TvActivity()
 
 		val recyclerViewAdapter = DisplayHostRecyclerViewAdapter(this::hostTriggered, this::showHostActions)
 		binding.hostsRecyclerView.adapter = recyclerViewAdapter
-		binding.hostsRecyclerView.layoutManager = GridLayoutManager(this, computeSpanCount())
+		// One horizontal row of tiles, like a game row
+		binding.hostsRecyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
 		// A cross-fade replaces the view holder, and the focused card would lose the focus with it
 		(binding.hostsRecyclerView.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
 		viewModel.displayHosts.observe(this, Observer {
-			val top = binding.hostsRecyclerView.computeVerticalScrollOffset() == 0
+			val top = binding.hostsRecyclerView.computeHorizontalScrollOffset() == 0
 			recyclerViewAdapter.hosts = it
 			if(top)
 				binding.hostsRecyclerView.scrollToPosition(0)
@@ -77,12 +78,6 @@ class MainActivity : TvActivity()
 		})
 
 		updateAutomaticFocus()
-	}
-
-	private fun computeSpanCount(): Int
-	{
-		val usableWidth = resources.displayMetrics.widthPixels - 2 * resources.getDimensionPixelSize(R.dimen.overscan_horizontal)
-		return max(1, usableWidth / resources.getDimensionPixelSize(R.dimen.host_card_min_width))
 	}
 
 	/** Initial focus: the first console card when there is one, the "register" button otherwise. */

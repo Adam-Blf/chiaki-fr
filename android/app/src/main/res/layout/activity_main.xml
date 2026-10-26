@@ -5,7 +5,7 @@
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/ink"
+    android:background="@drawable/bg_ps5_home"
     android:clipChildren="false"
     android:paddingStart="@dimen/overscan_horizontal"
     android:paddingEnd="@dimen/overscan_horizontal"
@@ -19,7 +19,6 @@
         android:text="@string/app_name"
         android:textAppearance="?attr/textAppearanceHeadlineMedium"
         android:textColor="@color/text_primary"
-        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -64,14 +63,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/action_settings"
-        app:icon="@drawable/ic_settings" />
+        app:icon="@drawable/ic_settings"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.helper.widget.Flow
         android:id="@+id/headerActionsFlow"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:constraint_referenced_ids="registerButton,addManualButton,discoverButton,settingsButton"
+        android:layout_marginTop="20dp"
+        app:constraint_referenced_ids="registerButton,addManualButton,discoverButton"
         app:flow_horizontalBias="0"
         app:flow_horizontalGap="12dp"
         app:flow_horizontalStyle="packed"
@@ -81,19 +82,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/subtitleTextView" />
 
+    <!-- One horizontal row of large console tiles, like a game row; the focused tile grows and shows its details -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/hostsRecyclerView"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="12dp"
+        android:layout_height="wrap_content"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
+        android:orientation="horizontal"
+        android:paddingTop="24dp"
+        android:paddingBottom="24dp"
+        app:layout_constrainedHeight="true"
         app:layout_constraintBottom_toTopOf="@id/hintTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/headerActionsFlow" />
+        app:layout_constraintTop_toBottomOf="@id/headerActionsFlow"
+        app:layout_constraintVertical_bias="0.4" />
 
     <LinearLayout
         android:id="@+id/emptyInfoLayout"
@@ -101,10 +105,10 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="@id/hostsRecyclerView"
+        app:layout_constraintBottom_toTopOf="@id/hintTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/hostsRecyclerView">
+        app:layout_constraintTop_toBottomOf="@id/headerActionsFlow">
 
         <ImageView
             android:id="@+id/emptyInfoImageView"

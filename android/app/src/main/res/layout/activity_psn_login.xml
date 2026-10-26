@@ -5,7 +5,7 @@
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/ink"
+    android:background="@drawable/bg_ps5_home"
     android:paddingStart="@dimen/overscan_horizontal"
     android:paddingEnd="@dimen/overscan_horizontal"
     android:paddingTop="@dimen/overscan_vertical"
@@ -18,7 +18,6 @@
         android:text="@string/title_psn_login"
         android:textAppearance="?attr/textAppearanceTitleLarge"
         android:textColor="@color/text_primary"
-        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

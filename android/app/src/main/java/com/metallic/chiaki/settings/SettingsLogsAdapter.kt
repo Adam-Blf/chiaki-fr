@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.metallic.chiaki.common.LogFile
+import com.metallic.chiaki.common.ext.enableOkLongPress
 import com.metallic.chiaki.databinding.ItemLogFileBinding
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -45,5 +46,6 @@ class SettingsLogsAdapter: RecyclerView.Adapter<SettingsLogsAdapter.ViewHolder>(
 			deleteCallback?.let { it(logFile) }
 			true
 		}
+		holder.binding.root.enableOkLongPress()
 	}
 }

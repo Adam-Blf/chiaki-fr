@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Sumi and Kaki: one dark Material 3 theme for the whole app, sized for reading at 3 m. -->
+    <!-- Deep Blue: one dark Material 3 theme for the whole app, inspired by a console home screen
+         (near-black blue gradient, translucent cards, white focus ring), sized for reading at 3 m.
+         Typeface: Source Sans 3 (SIL OFL). -->
     <style name="AppTheme" parent="Theme.Material3.Dark.NoActionBar">
         <item name="colorPrimary">@color/accent</item>
         <item name="colorOnPrimary">@color/on_accent</item>
         <item name="colorPrimaryContainer">@color/accent_container</item>
-        <item name="colorOnPrimaryContainer">@color/accent</item>
+        <item name="colorOnPrimaryContainer">@color/text_primary</item>
         <item name="colorSecondary">@color/accent</item>
         <item name="colorOnSecondary">@color/on_accent</item>
         <item name="colorSecondaryContainer">@color/accent_container</item>
         <item name="colorOnSecondaryContainer">@color/text_primary</item>
-        <item name="colorAccent">@color/accent</item>
+        <item name="colorAccent">@color/accent_text</item>
         <item name="colorSurface">@color/surface</item>
         <item name="colorOnSurface">@color/text_primary</item>
         <item name="colorSurfaceVariant">@color/surface_raised</item>
@@ -27,18 +29,26 @@
         <item name="colorError">@color/danger</item>
         <item name="colorOnError">@color/ink</item>
         <item name="colorControlNormal">@color/text_secondary</item>
-        <item name="colorControlActivated">@color/accent</item>
-        <item name="colorControlHighlight">@color/accent_container</item>
+        <item name="colorControlActivated">@color/accent_light</item>
+        <item name="colorControlHighlight">@color/surface_pill</item>
 
         <item name="android:colorBackground">@color/ink</item>
-        <item name="android:windowBackground">@color/ink</item>
+        <item name="android:windowBackground">@drawable/bg_ps5_home</item>
         <item name="android:statusBarColor">@color/ink</item>
-        <item name="android:navigationBarColor">@color/ink</item>
+        <item name="android:navigationBarColor">@color/ink_end</item>
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
         <item name="android:windowActivityTransitions">true</item>
 
-        <!-- Every focusable row (preferences, lists) gets the visible focus ring -->
+        <item name="android:fontFamily">@font/source_sans_3</item>
+        <item name="fontFamily">@font/source_sans_3</item>
+
+        <!-- Large rounded corners everywhere (cards, dialogs, menus) -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.App.Small</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.App.Medium</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.App.Large</item>
+
+        <!-- Every focusable row (preferences, lists) gets the white focus outline -->
         <item name="android:selectableItemBackground">@drawable/bg_focusable_row</item>
         <item name="android:listSelector">@drawable/bg_focusable_row</item>
         <item name="android:textAppearanceListItem">@style/TextAppearance.App.BodyLarge</item>
@@ -54,8 +64,8 @@
         <item name="textAppearanceBodyMedium">@style/TextAppearance.App.BodyLarge</item>
         <item name="textAppearanceBodySmall">@style/TextAppearance.App.BodySmall</item>
         <item name="textAppearanceLabelLarge">@style/TextAppearance.App.LabelLarge</item>
-        <item name="textAppearanceLabelMedium">@style/TextAppearance.App.BodySmall</item>
-        <item name="textAppearanceLabelSmall">@style/TextAppearance.App.BodySmall</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.App.LabelLarge</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.App.LabelLarge</item>
 
         <item name="materialButtonStyle">@style/Widget.App.Button</item>
         <item name="materialButtonOutlinedStyle">@style/Widget.App.Button.Outlined</item>
@@ -65,38 +75,61 @@
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
     </style>
 
-    <!-- Text scale: body 20sp, small 18sp, titles 24sp, headline 32sp. Nothing essential below 18sp. -->
+    <style name="ShapeAppearance.App.Small" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+
+    <style name="ShapeAppearance.App.Medium" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <style name="ShapeAppearance.App.Large" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">24dp</item>
+    </style>
+
+    <!-- Text scale: headline 40sp Light, titles 28sp Regular and 22sp SemiBold, body 20sp Regular,
+         labels 18sp SemiBold, small 18sp Regular. Nothing essential below 18sp. -->
     <style name="TextAppearance.App.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:fontFamily">@font/source_sans_3</item>
         <item name="android:textSize">20sp</item>
         <item name="lineHeight">28sp</item>
     </style>
 
     <style name="TextAppearance.App.BodySmall" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:fontFamily">@font/source_sans_3</item>
         <item name="android:textSize">18sp</item>
         <item name="lineHeight">26sp</item>
     </style>
 
     <style name="TextAppearance.App.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:fontFamily">@font/source_sans_3_semibold</item>
         <item name="android:textSize">22sp</item>
         <item name="lineHeight">30sp</item>
     </style>
 
     <style name="TextAppearance.App.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
-        <item name="android:textSize">24sp</item>
-        <item name="lineHeight">32sp</item>
+        <item name="android:fontFamily">@font/source_sans_3</item>
+        <item name="android:textSize">28sp</item>
+        <item name="lineHeight">36sp</item>
     </style>
 
     <style name="TextAppearance.App.Headline" parent="TextAppearance.Material3.HeadlineMedium">
-        <item name="android:textSize">32sp</item>
-        <item name="lineHeight">40sp</item>
+        <item name="android:fontFamily">@font/source_sans_3_light</item>
+        <item name="android:textSize">40sp</item>
+        <item name="lineHeight">48sp</item>
     </style>
 
     <style name="TextAppearance.App.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
-        <item name="android:textSize">20sp</item>
-        <item name="lineHeight">28sp</item>
+        <item name="android:fontFamily">@font/source_sans_3_semibold</item>
+        <item name="android:textSize">18sp</item>
+        <item name="lineHeight">26sp</item>
     </style>
 
-    <!-- Buttons: big, with a focus ring (stroke) and the 1.06 focus scale -->
+    <!-- Header buttons: neutral translucent pills. They never look focused until they are:
+         the only focus signal is the white outline (plus the scale). -->
     <style name="Widget.App.Button" parent="Widget.Material3.Button">
         <item name="android:minHeight">@dimen/tv_button_min_height</item>
         <item name="android:textAppearance">?attr/textAppearanceLabelLarge</item>
@@ -105,12 +138,12 @@
         <item name="android:paddingStart">24dp</item>
         <item name="android:paddingEnd">24dp</item>
         <item name="android:stateListAnimator">@animator/focus_scale</item>
-        <item name="backgroundTint">@color/accent</item>
-        <item name="android:textColor">@color/on_accent</item>
-        <item name="iconTint">@color/on_accent</item>
+        <item name="backgroundTint">@color/btn_bg_outlined</item>
+        <item name="android:textColor">@color/btn_text_outlined</item>
+        <item name="iconTint">@color/btn_text_outlined</item>
         <item name="strokeColor">@color/btn_stroke_filled</item>
-        <item name="strokeWidth">3dp</item>
-        <item name="cornerRadius">14dp</item>
+        <item name="strokeWidth">@dimen/focus_ring_width</item>
+        <item name="cornerRadius">28dp</item>
         <item name="iconPadding">10dp</item>
         <item name="iconSize">24dp</item>
     </style>
@@ -125,11 +158,12 @@
     <style name="Widget.App.Button.Dialog" parent="Widget.Material3.Button.TextButton.Dialog">
         <item name="android:minHeight">@dimen/tv_button_min_height</item>
         <item name="android:textAppearance">?attr/textAppearanceLabelLarge</item>
+        <item name="android:textColor">@color/text_primary</item>
         <item name="android:stateListAnimator">@animator/focus_scale</item>
         <item name="backgroundTint">@color/btn_bg_text</item>
         <item name="strokeColor">@color/btn_stroke_text</item>
-        <item name="strokeWidth">3dp</item>
-        <item name="cornerRadius">14dp</item>
+        <item name="strokeWidth">@dimen/focus_ring_width</item>
+        <item name="cornerRadius">28dp</item>
     </style>
 
     <style name="Widget.App.RadioButton" parent="Widget.Material3.CompoundButton.RadioButton">
@@ -151,25 +185,25 @@
     <style name="Widget.App.TextInput" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="boxStrokeColor">@color/text_input_stroke</item>
         <item name="boxStrokeErrorColor">@color/danger</item>
-        <item name="boxStrokeWidth">2dp</item>
-        <item name="boxStrokeWidthFocused">4dp</item>
-        <item name="hintTextColor">@color/accent</item>
-        <item name="boxCornerRadiusTopStart">12dp</item>
-        <item name="boxCornerRadiusTopEnd">12dp</item>
-        <item name="boxCornerRadiusBottomStart">12dp</item>
-        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">@dimen/focus_ring_width</item>
+        <item name="hintTextColor">@color/text_secondary</item>
+        <item name="boxCornerRadiusTopStart">16dp</item>
+        <item name="boxCornerRadiusTopEnd">16dp</item>
+        <item name="boxCornerRadiusBottomStart">16dp</item>
+        <item name="boxCornerRadiusBottomEnd">16dp</item>
     </style>
 
     <style name="Widget.App.TextInput.ExposedDropdownMenu" parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
         <item name="boxStrokeColor">@color/text_input_stroke</item>
         <item name="boxStrokeErrorColor">@color/danger</item>
-        <item name="boxStrokeWidth">2dp</item>
-        <item name="boxStrokeWidthFocused">4dp</item>
-        <item name="hintTextColor">@color/accent</item>
-        <item name="boxCornerRadiusTopStart">12dp</item>
-        <item name="boxCornerRadiusTopEnd">12dp</item>
-        <item name="boxCornerRadiusBottomStart">12dp</item>
-        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">@dimen/focus_ring_width</item>
+        <item name="hintTextColor">@color/text_secondary</item>
+        <item name="boxCornerRadiusTopStart">16dp</item>
+        <item name="boxCornerRadiusTopEnd">16dp</item>
+        <item name="boxCornerRadiusBottomStart">16dp</item>
+        <item name="boxCornerRadiusBottomEnd">16dp</item>
     </style>
 
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">

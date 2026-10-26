@@ -33,6 +33,7 @@
 
         <ProgressBar
             android:id="@+id/progressBar"
+            android:indeterminateTint="@color/accent_light"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
@@ -41,17 +42,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:fontFamily="@font/source_sans_3_light"
             android:textColor="#FFFFFF"
-            android:textSize="24sp"
-            android:textStyle="bold"/>
+            android:textSize="28sp"/>
 
         <TextView
             android:id="@+id/connectingHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:fontFamily="@font/source_sans_3"
             android:text="@string/stream_connecting_hint"
-            android:textColor="#B8C4D0"
+            android:textColor="@color/stream_secondary"
             android:textSize="18sp"/>
     </LinearLayout>
 
@@ -155,10 +157,10 @@
         android:layout_marginEnd="48dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:background="@drawable/stream_stats_pill_bg"
         android:visibility="gone">
 
@@ -173,6 +175,7 @@
             android:id="@+id/statsText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/source_sans_3_semibold"
             android:fontFeatureSettings="tnum"
             android:singleLine="true"
             android:textColor="#FFFFFF"
@@ -183,8 +186,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
+            android:fontFamily="@font/source_sans_3"
             android:singleLine="true"
-            android:textColor="#B8C4D0"
+            android:textColor="@color/stream_secondary"
             android:textSize="18sp"/>
     </LinearLayout>
 
@@ -192,43 +196,43 @@
         android:id="@+id/streamMenuRoot"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#99000000"
+        android:background="#8C000614"
         android:clickable="true"
         android:focusable="false"
         android:visibility="gone">
 
         <LinearLayout
             android:id="@+id/streamMenuPanel"
-            android:layout_width="360dp"
+            android:layout_width="400dp"
             android:layout_height="match_parent"
             android:layout_gravity="end"
             android:layout_marginTop="27dp"
             android:layout_marginBottom="27dp"
             android:layout_marginEnd="48dp"
             android:orientation="vertical"
-            android:padding="20dp"
+            android:padding="24dp"
             android:clickable="true"
             android:background="@drawable/stream_menu_panel_bg">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="20dp"
+                android:fontFamily="@font/source_sans_3_light"
                 android:text="@string/stream_menu_title"
                 android:textColor="#FFFFFF"
-                android:textSize="24sp"
-                android:textStyle="bold"/>
+                android:textSize="32sp"/>
 
             <LinearLayout
                 android:id="@+id/menuItemStats"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:minHeight="56dp"
+                android:minHeight="60dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
                 android:clickable="true"
                 android:focusable="false"
                 android:background="@drawable/stream_menu_item_bg">
@@ -237,8 +241,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/stream_menu_stats"
+                    android:fontFamily="@font/source_sans_3"
                     android:textColor="#FFFFFF"
-                    android:textSize="18sp"/>
+                    android:textSize="20sp"/>
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/menuStatsSwitch"
                     android:layout_width="wrap_content"
@@ -252,11 +257,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:minHeight="56dp"
+                android:minHeight="60dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
                 android:clickable="true"
                 android:focusable="false"
                 android:background="@drawable/stream_menu_item_bg">
@@ -265,15 +270,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/stream_menu_display_mode"
+                    android:fontFamily="@font/source_sans_3"
                     android:textColor="#FFFFFF"
-                    android:textSize="18sp"/>
+                    android:textSize="20sp"/>
                 <TextView
                     android:id="@+id/menuDisplayValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#FF8F4D"
-                    android:textSize="18sp"
-                    android:textStyle="bold"/>
+                    android:fontFamily="@font/source_sans_3_semibold"
+                    android:textColor="@color/accent_text"
+                    android:textSize="20sp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -281,11 +287,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:minHeight="56dp"
+                android:minHeight="60dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
                 android:clickable="true"
                 android:focusable="false"
                 android:background="@drawable/stream_menu_item_bg">
@@ -294,8 +300,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/stream_menu_resume"
+                    android:fontFamily="@font/source_sans_3"
                     android:textColor="#FFFFFF"
-                    android:textSize="18sp"/>
+                    android:textSize="20sp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -303,11 +310,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:minHeight="56dp"
+                android:minHeight="60dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
                 android:clickable="true"
                 android:focusable="false"
                 android:background="@drawable/stream_menu_item_bg">
@@ -316,8 +323,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/stream_menu_sleep"
+                    android:fontFamily="@font/source_sans_3"
                     android:textColor="#FFFFFF"
-                    android:textSize="18sp"/>
+                    android:textSize="20sp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -325,11 +333,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:minHeight="56dp"
+                android:minHeight="60dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
                 android:clickable="true"
                 android:focusable="false"
                 android:background="@drawable/stream_menu_item_bg">
@@ -338,8 +346,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/stream_menu_quit"
+                    android:fontFamily="@font/source_sans_3"
                     android:textColor="#FFFFFF"
-                    android:textSize="18sp"/>
+                    android:textSize="20sp"/>
             </LinearLayout>
 
             <Space
@@ -350,8 +359,9 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/source_sans_3"
                 android:text="@string/stream_menu_hint"
-                android:textColor="#B8C4D0"
+                android:textColor="@color/stream_secondary"
                 android:textSize="18sp"/>
         </LinearLayout>
     </FrameLayout>

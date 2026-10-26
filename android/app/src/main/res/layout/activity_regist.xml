@@ -5,7 +5,7 @@
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/ink"
+    android:background="@drawable/bg_ps5_home"
     android:clipToPadding="false"
     android:paddingStart="@dimen/overscan_horizontal"
     android:paddingEnd="@dimen/overscan_horizontal"
@@ -25,8 +25,7 @@
             android:layout_height="wrap_content"
             android:text="@string/title_regist"
             android:textAppearance="?attr/textAppearanceHeadlineMedium"
-            android:textColor="@color/text_primary"
-            android:textStyle="bold" />
+            android:textColor="@color/text_primary" />
 
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="match_parent"
@@ -34,8 +33,7 @@
             android:layout_marginTop="24dp"
             android:text="@string/regist_section_console"
             android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:textColor="@color/accent"
-            android:textStyle="bold" />
+            android:textColor="@color/accent_text" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/hostTextInputLayout"
@@ -100,8 +98,7 @@
             android:layout_marginTop="32dp"
             android:text="@string/regist_section_account"
             android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:textColor="@color/accent"
-            android:textStyle="bold" />
+            android:textColor="@color/accent_text" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/psnLoginButton"
@@ -121,7 +118,6 @@
             android:gravity="center_vertical"
             android:textAppearance="?attr/textAppearanceBodyLarge"
             android:textColor="@color/state_ready"
-            android:textStyle="bold"
             android:visibility="gone"
             app:drawableStartCompat="@drawable/ic_check_circle"
             app:drawableTint="@color/state_ready" />
@@ -158,8 +154,7 @@
             android:layout_marginTop="32dp"
             android:text="@string/regist_section_pin"
             android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:textColor="@color/accent"
-            android:textStyle="bold" />
+            android:textColor="@color/accent_text" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/pinHelpBeforeTextView"
@@ -176,8 +171,7 @@
             android:layout_height="wrap_content"
             android:text="@string/regist_pin_instructions_ps4_navigation"
             android:textAppearance="?attr/textAppearanceBodyLarge"
-            android:textColor="@color/text_primary"
-            android:textStyle="bold" />
+            android:textColor="@color/text_primary" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/pinHelpAfterTextView"

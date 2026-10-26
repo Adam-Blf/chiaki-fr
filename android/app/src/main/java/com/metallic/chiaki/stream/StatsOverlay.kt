@@ -13,9 +13,9 @@ import java.util.Locale
 
 enum class StreamQuality(val color: Int)
 {
-	GOOD(0xFF3DDC84.toInt()),
-	FAIR(0xFFFFB300.toInt()),
-	BAD(0xFFFF4D4D.toInt())
+	GOOD(0xFF4AE3A0.toInt()),
+	FAIR(0xFFFFC54D.toInt()),
+	BAD(0xFFFF6B7A.toInt())
 }
 
 enum class StreamDiagnosis { OK, NETWORK, DECODER }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Window background of every non-stream screen: deep blue vertical gradient plus a soft blue bloom at the top-left. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="270"
+                android:startColor="@color/ink"
+                android:endColor="@color/ink_end"
+                android:type="linear" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:centerX="0.08"
+                android:centerY="0.0"
+                android:endColor="#000070D1"
+                android:gradientRadius="75%"
+                android:startColor="#590070D1"
+                android:type="radial" />
+        </shape>
+    </item>
+</layer-list>

@@ -15,6 +15,7 @@ import com.metallic.chiaki.R
 import com.metallic.chiaki.common.DiscoveredDisplayHost
 import com.metallic.chiaki.common.DisplayHost
 import com.metallic.chiaki.common.ManualDisplayHost
+import com.metallic.chiaki.common.ext.enableOkLongPress
 import com.metallic.chiaki.databinding.ItemDisplayHostBinding
 
 /**
@@ -52,6 +53,11 @@ class DisplayHostRecyclerViewAdapter(
 			field = value
 			diff.dispatchUpdatesTo(this)
 		}
+
+	private companion object
+	{
+		const val DETAILS_FADE_MS = 150L
+	}
 
 	class ViewHolder(val binding: ItemDisplayHostBinding): RecyclerView.ViewHolder(binding.root)
 
@@ -93,6 +99,24 @@ class DisplayHostRecyclerViewAdapter(
 				longClickCallback(host)
 				true
 			}
+			// Remote and gamepad: a held OK opens the actions, a short OK connects, never both
+			it.root.enableOkLongPress()
+
+			// Address, running app and action only show on the focused tile
+			it.setDetailsShown(it.root.hasFocus(), false)
+			it.root.setOnFocusChangeListener { _, focused -> it.setDetailsShown(focused, true) }
+		}
+	}
+
+	private fun ItemDisplayHostBinding.setDetailsShown(shown: Boolean, animate: Boolean)
+	{
+		val alpha = if(shown) 1f else 0f
+		listOf(hostTextView, bottomInfoTextView, actionTextView).forEach { view ->
+			view.animate().cancel()
+			if(animate)
+				view.animate().alpha(alpha).setDuration(DETAILS_FADE_MS).start()
+			else
+				view.alpha = alpha
 		}
 	}
 }

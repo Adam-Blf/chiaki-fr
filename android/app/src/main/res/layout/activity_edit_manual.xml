@@ -5,7 +5,7 @@
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/ink"
+    android:background="@drawable/bg_ps5_home"
     android:clipToPadding="false"
     android:paddingStart="@dimen/overscan_horizontal"
     android:paddingEnd="@dimen/overscan_horizontal"
@@ -25,8 +25,7 @@
             android:layout_height="wrap_content"
             android:text="@string/title_edit_manual"
             android:textAppearance="?attr/textAppearanceHeadlineMedium"
-            android:textColor="@color/text_primary"
-            android:textStyle="bold" />
+            android:textColor="@color/text_primary" />
 
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="match_parent"

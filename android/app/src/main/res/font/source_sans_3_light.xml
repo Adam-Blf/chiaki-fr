@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Source Sans 3 (SIL OFL 1.1), variable font: one file, one entry per weight. -->
+<font-family xmlns:app="http://schemas.android.com/apk/res-auto">
+    <font app:font="@font/source_sans_3_variable" app:fontStyle="normal" app:fontWeight="300" app:fontVariationSettings="'wght' 300" />
+</font-family>

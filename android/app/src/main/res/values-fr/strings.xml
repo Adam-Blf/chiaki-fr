@@ -35,7 +35,7 @@
     <string name="regist_pin_instructions_ps4_before">Sur la PS4, allez dans</string>
     <string name="regist_pin_instructions_ps4_navigation">Paramètres →\nParamètres de connexion de la lecture à distance →\nAjouter un appareil</string>
     <string name="regist_pin_instructions_ps5_before">Sur la PS5, allez dans</string>
-    <string name="regist_pin_instructions_ps5_navigation">Paramètres →\nSystème → Lecture à distance →\nAssocier un appareil</string>
+    <string name="regist_pin_instructions_ps5_navigation">Paramètres →\nSystème → Lecture à distance →\nAppairer le périphérique</string>
     <string name="regist_pin_instructions_after">pour obtenir le code PIN</string>
     <string name="title_regist">Associer ma console</string>
     <string name="regist_section_console">Votre console</string>

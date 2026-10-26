@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.metallic.chiaki.R
+import com.metallic.chiaki.common.ext.enableOkLongPress
 import com.metallic.chiaki.common.RegisteredHost
 import com.metallic.chiaki.databinding.ItemRegisteredHostBinding
 
@@ -39,5 +40,6 @@ class SettingsRegisteredHostsAdapter: RecyclerView.Adapter<SettingsRegisteredHos
 			deleteCallback?.let { callback -> callback(host) }
 			true
 		}
+		holder.binding.root.enableOkLongPress()
 	}
 }
