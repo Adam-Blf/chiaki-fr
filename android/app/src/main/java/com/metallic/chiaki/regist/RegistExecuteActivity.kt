@@ -3,25 +3,27 @@
 package com.metallic.chiaki.regist
 
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.View
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.metallic.chiaki.R
 import com.metallic.chiaki.common.MacAddress
+import com.metallic.chiaki.common.TvActivity
 import com.metallic.chiaki.common.ext.viewModelFactory
 import com.metallic.chiaki.common.getDatabase
+import com.metallic.chiaki.common.showWithFocus
 import com.metallic.chiaki.databinding.ActivityRegistExecuteBinding
 import com.metallic.chiaki.lib.RegistInfo
 import kotlin.math.max
 
-class RegistExecuteActivity: AppCompatActivity()
+class RegistExecuteActivity: TvActivity()
 {
 	companion object
 	{
@@ -63,12 +65,16 @@ class RegistExecuteActivity: AppCompatActivity()
 				{
 					binding.infoTextView.visibility = View.VISIBLE
 					binding.infoTextView.setText(R.string.regist_info_failed)
+					binding.infoTextView.setTextColor(getColor(R.color.danger))
+					showDoneButton(R.string.action_regist_done_failed)
 					setResult(RESULT_FAILED)
 				}
 				RegistExecuteViewModel.State.SUCCESSFUL, RegistExecuteViewModel.State.SUCCESSFUL_DUPLICATE ->
 				{
 					binding.infoTextView.visibility = View.VISIBLE
 					binding.infoTextView.setText(R.string.regist_info_success)
+					binding.infoTextView.setTextColor(getColor(R.color.state_ready))
+					showDoneButton(R.string.action_regist_done_success)
 					setResult(RESULT_OK)
 					if(it == RegistExecuteViewModel.State.SUCCESSFUL_DUPLICATE)
 						showDuplicateDialog()
@@ -90,6 +96,7 @@ class RegistExecuteActivity: AppCompatActivity()
 				startActivity(Intent.createChooser(it, resources.getString(R.string.action_share_log)))
 			}
 		}
+		binding.doneButton.setOnClickListener { finish() }
 
 		val registInfo = IntentCompat.getParcelableExtra(intent, EXTRA_REGIST_INFO, RegistInfo::class.java)
 		if(registInfo == null)
@@ -102,6 +109,13 @@ class RegistExecuteActivity: AppCompatActivity()
 				intent.getLongExtra(EXTRA_ASSIGN_MANUAL_HOST_ID, 0)
 			else
 				null)
+	}
+
+	private fun showDoneButton(@androidx.annotation.StringRes label: Int)
+	{
+		binding.doneButton.setText(label)
+		binding.doneButton.visibility = View.VISIBLE
+		binding.doneButton.requestFocus()
 	}
 
 	override fun onStop()
@@ -126,7 +140,7 @@ class RegistExecuteActivity: AppCompatActivity()
 				viewModel.saveHost()
 			}
 			.create()
-			.also { it.show() }
+			.also { it.showWithFocus(DialogInterface.BUTTON_NEGATIVE) }
 
 	}
 }

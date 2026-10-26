@@ -4,6 +4,7 @@ package com.metallic.chiaki.common
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import androidx.annotation.StringRes
 import androidx.preference.PreferenceManager
 import com.metallic.chiaki.R
@@ -45,9 +46,16 @@ class Preferences(context: Context)
 		val resolutionAll = Resolution.values()
 		val fpsDefault = FPS.FPS_60
 		val fpsAll = FPS.values()
+		// H265 stays the default: it is what PS5 consoles expect and what a Shield decodes in hardware.
+		// A PS4 only streams H264, so PS4 owners switch the codec in the settings.
 		val codecDefault = Codec.CODEC_H265
 		val codecAll = Codec.values()
+
+		/** Bitrate presets offered in the settings, in kbit/s. 0 stands for "Auto". */
+		val bitratePresetsKbps = listOf(5000, 10000, 15000, 20000, 30000)
 	}
+
+	private val hasTouchscreen = context.packageManager.hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN)
 
 	private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 	private val sharedPreferenceChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
@@ -66,8 +74,18 @@ class Preferences(context: Context)
 
 	val onScreenControlsEnabledKey get() = resources.getString(R.string.preferences_on_screen_controls_enabled_key)
 	var onScreenControlsEnabled
-		get() = sharedPreferences.getBoolean(onScreenControlsEnabledKey, true)
+		get() = sharedPreferences.getBoolean(onScreenControlsEnabledKey, hasTouchscreen)
 		set(value) { sharedPreferences.edit().putBoolean(onScreenControlsEnabledKey, value).apply() }
+
+	val lowLatencyKey get() = resources.getString(R.string.preferences_low_latency_key)
+	var lowLatency
+		get() = sharedPreferences.getBoolean(lowLatencyKey, true)
+		set(value) { sharedPreferences.edit().putBoolean(lowLatencyKey, value).apply() }
+
+	val statsOverlayEnabledKey get() = resources.getString(R.string.preferences_stats_overlay_enabled_key)
+	var statsOverlayEnabled
+		get() = sharedPreferences.getBoolean(statsOverlayEnabledKey, false)
+		set(value) { sharedPreferences.edit().putBoolean(statsOverlayEnabledKey, value).apply() }
 
 	val touchpadOnlyEnabledKey get() = resources.getString(R.string.preferences_touchpad_only_enabled_key)
 	var touchpadOnlyEnabled

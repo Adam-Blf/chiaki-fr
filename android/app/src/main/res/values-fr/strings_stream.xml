@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stream_menu_title">Menu de la partie</string>
+    <string name="stream_menu_stats">Statistiques</string>
+    <string name="stream_menu_display_mode">Affichage</string>
+    <string name="stream_display_mode_fit">Ajusté</string>
+    <string name="stream_display_mode_zoom">Zoom</string>
+    <string name="stream_display_mode_stretch">Étiré</string>
+    <string name="stream_menu_resume">Reprendre la partie</string>
+    <string name="stream_menu_quit">Quitter la partie</string>
+    <string name="stream_menu_hint">A : valider, B : fermer</string>
+    <string name="stream_connecting_title">Connexion à %1$s...</string>
+    <string name="stream_connecting_hint">Retour pour annuler</string>
+    <string name="stream_stats_format">%1$s i/s | %2$s Mbit/s | %3$s ms | décodage %4$s ms | pertes %5$s %%</string>
+    <string name="stream_stats_diag_ok">Diagnostic : OK</string>
+    <string name="stream_stats_diag_network">Diagnostic : réseau</string>
+    <string name="stream_stats_diag_decoder">Diagnostic : décodeur</string>
+    <string name="stream_menu_sleep">Mettre la console en veille</string>
+</resources>

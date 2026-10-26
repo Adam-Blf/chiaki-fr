@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android TV banner, 320x180dp: ink background, persimmon accent, "Chiaki FR" wordmark drawn as strokes. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+    <path
+        android:fillColor="#0A0E14"
+        android:pathData="M0,0h320v180h-320z" />
+    <path
+        android:fillColor="#121923"
+        android:pathData="M0,132h320v48h-320z" />
+    <path
+        android:fillColor="#FF8F4D"
+        android:pathData="M0,130h320v3h-320z" />
+    <group
+        android:pivotX="0"
+        android:pivotY="0"
+        android:scaleX="0.7"
+        android:scaleY="0.7"
+        android:translateX="32"
+        android:translateY="17">
+        <path
+            android:fillColor="#00000000"
+            android:strokeColor="#EAF0F7"
+            android:strokeWidth="6"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:pathData="M75.3,77.1 A20,20 0 1 0 75.3,102.9 M100,70 V110 M100,96 A12,12 0 0 1 124,96 V110 M140,82 V110 M140,69 V70 M178,96 A14,14 0 1 0 150,96 A14,14 0 1 0 178,96 M178,82 V110 M196,70 V110 M217,82 L196,100 M205,93 L218,110 M236,82 V110 M236,69 V70" />
+        <path
+            android:fillColor="#00000000"
+            android:strokeColor="#FF8F4D"
+            android:strokeWidth="6"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:pathData="M262,70 V110 M262,70 H288 M262,90 H282 M304,70 V110 M304,70 H318 A10,10 0 0 1 318,90 H304 M316,90 L326,110" />
+    </group>
+</vector>

@@ -4,11 +4,11 @@ package com.metallic.chiaki.settings
 
 import android.content.res.Resources
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.metallic.chiaki.R
+import com.metallic.chiaki.common.TvActivity
 import com.metallic.chiaki.databinding.ActivitySettingsBinding
 
 interface TitleFragment
@@ -16,7 +16,7 @@ interface TitleFragment
 	fun getTitle(resources: Resources): String
 }
 
-class SettingsActivity: AppCompatActivity(), PreferenceFragmentCompat.OnPreferenceStartFragmentCallback
+class SettingsActivity: TvActivity(), PreferenceFragmentCompat.OnPreferenceStartFragmentCallback
 {
 	private lateinit var binding: ActivitySettingsBinding
 
@@ -26,7 +26,6 @@ class SettingsActivity: AppCompatActivity(), PreferenceFragmentCompat.OnPreferen
 		binding = ActivitySettingsBinding.inflate(layoutInflater)
 		setContentView(binding.root)
 		title = ""
-		setSupportActionBar(binding.toolbar)
 
 		val rootFragment = SettingsFragment()
 		replaceFragment(rootFragment, false)
@@ -41,6 +40,10 @@ class SettingsActivity: AppCompatActivity(), PreferenceFragmentCompat.OnPreferen
 	{
 		SettingsRegisteredHostsFragment::class.java.canonicalName -> {
 			replaceFragment(SettingsRegisteredHostsFragment(), true)
+			true
+		}
+		SettingsLogsFragment::class.java.canonicalName -> {
+			replaceFragment(SettingsLogsFragment(), true)
 			true
 		}
 		else -> false

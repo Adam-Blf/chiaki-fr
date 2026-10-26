@@ -3,6 +3,7 @@
 package com.metallic.chiaki.settings
 
 import android.content.ClipData
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
@@ -16,11 +17,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.metallic.chiaki.R
 import com.metallic.chiaki.common.LogFile
 import com.metallic.chiaki.common.LogManager
+import com.metallic.chiaki.common.ext.hasTouchscreen
+import com.metallic.chiaki.common.ext.requestFocusOnFirstItem
 import com.metallic.chiaki.common.ext.viewModelFactory
 import com.metallic.chiaki.common.fileProviderAuthority
+import com.metallic.chiaki.common.showWithFocus
 import com.metallic.chiaki.databinding.FragmentSettingsLogsBinding
 
 class SettingsLogsFragment: AppCompatDialogFragment(), TitleFragment
@@ -47,21 +52,43 @@ class SettingsLogsFragment: AppCompatDialogFragment(), TitleFragment
 		binding.logsRecyclerView.layoutManager = LinearLayoutManager(context)
 		binding.logsRecyclerView.adapter = adapter
 		adapter.shareCallback = this::shareLogFile
+		adapter.deleteCallback = this::confirmDelete
 		viewModel.sessionLogs.observe(viewLifecycleOwner, Observer {
 			adapter.logFiles = it
 			binding.emptyInfoGroup.visibility = if(it.isEmpty()) View.VISIBLE else View.GONE
 		})
+		binding.logsRecyclerView.requestFocusOnFirstItem()
 
-		val itemTouchSwipeCallback = object : ItemTouchSwipeCallback(context)
+		if(context.hasTouchscreen)
 		{
-			override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int)
+			binding.hintTextView.visibility = View.GONE
+			val itemTouchSwipeCallback = object : ItemTouchSwipeCallback(context)
 			{
-				val pos = viewHolder.adapterPosition
-				val file = viewModel.sessionLogs.value?.getOrNull(pos) ?: return
-				viewModel.deleteLog(file)
+				override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int)
+				{
+					val pos = viewHolder.adapterPosition
+					val file = viewModel.sessionLogs.value?.getOrNull(pos) ?: return
+					viewModel.deleteLog(file)
+				}
 			}
+			ItemTouchHelper(itemTouchSwipeCallback).attachToRecyclerView(binding.logsRecyclerView)
 		}
-		ItemTouchHelper(itemTouchSwipeCallback).attachToRecyclerView(binding.logsRecyclerView)
+	}
+
+	private fun confirmDelete(file: LogFile)
+	{
+		MaterialAlertDialogBuilder(requireContext())
+			.setMessage(R.string.alert_message_delete_log)
+			.setPositiveButton(R.string.action_delete) { _, _ -> viewModel.deleteLog(file) }
+			.setNegativeButton(R.string.action_keep) { _, _ -> }
+			.create()
+			.showWithFocus(DialogInterface.BUTTON_NEGATIVE)
+	}
+
+	override fun onDestroyView()
+	{
+		super.onDestroyView()
+		_binding = null
 	}
 
 	override fun getTitle(resources: Resources): String = resources.getString(R.string.preferences_logs_title)

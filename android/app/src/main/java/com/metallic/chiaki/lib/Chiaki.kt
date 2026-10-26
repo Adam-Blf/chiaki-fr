@@ -69,7 +69,8 @@ data class ConnectInfo(
 	val host: String,
 	val registKey: ByteArray,
 	val morning: ByteArray,
-	val videoProfile: ConnectVideoProfile
+	val videoProfile: ConnectVideoProfile,
+	val lowLatency: Boolean = true
 ): Parcelable
 
 private class ChiakiNative
@@ -89,10 +90,12 @@ private class ChiakiNative
 		@JvmStatic external fun sessionFree(ptr: Long)
 		@JvmStatic external fun sessionStart(ptr: Long): Int
 		@JvmStatic external fun sessionStop(ptr: Long): Int
+		@JvmStatic external fun sessionGotoBed(ptr: Long): Int
 		@JvmStatic external fun sessionJoin(ptr: Long): Int
 		@JvmStatic external fun sessionSetSurface(ptr: Long, surface: Surface?)
 		@JvmStatic external fun sessionSetControllerState(ptr: Long, controllerState: ControllerState)
 		@JvmStatic external fun sessionSetLoginPin(ptr: Long, pin: String)
+		@JvmStatic external fun sessionGetStats(ptr: Long): StreamStats
 		@JvmStatic external fun discoveryServiceCreate(result: CreateResult, options: DiscoveryServiceOptions, javaService: DiscoveryService)
 		@JvmStatic external fun discoveryServiceFree(ptr: Long)
 		@JvmStatic external fun discoveryServiceWakeup(ptr: Long, host: String, userCredential: Long, ps5: Boolean)
@@ -318,6 +321,20 @@ data class LoginPinRequestEvent(val pinIncorrect: Boolean): Event()
 data class QuitEvent(val reason: QuitReason, val reasonString: String?): Event()
 data class RumbleEvent(val left: UByte, val right: UByte): Event()
 
+/**
+ * Snapshot of the stream health, unavailable values are 0
+ * [bitrateMbps] and [packetLossPercent] are as measured by the library, [rttMs] is the handshake round trip time
+ */
+data class StreamStats(
+	val fps: Float,
+	val decodeMs: Float,
+	val bitrateMbps: Float,
+	val packetLossPercent: Float,
+	val rttMs: Float,
+	val framesDropped: Long,
+	val framesLost: Long
+)
+
 class CreateError(val errorCode: ErrorCode): Exception("Failed to create a native object: $errorCode")
 
 class Session(connectInfo: ConnectInfo, logFile: String?, logVerbose: Boolean)
@@ -342,6 +359,7 @@ class Session(connectInfo: ConnectInfo, logFile: String?, logVerbose: Boolean)
 
 	fun start() = ErrorCode(ChiakiNative.sessionStart(nativePtr))
 	fun stop() = ErrorCode(ChiakiNative.sessionStop(nativePtr))
+	fun gotoBed() = ErrorCode(ChiakiNative.sessionGotoBed(nativePtr))
 
 	fun dispose()
 	{
@@ -386,6 +404,12 @@ class Session(connectInfo: ConnectInfo, logFile: String?, logVerbose: Boolean)
 	{
 		ChiakiNative.sessionSetControllerState(nativePtr, controllerState)
 	}
+
+	fun stats(): StreamStats =
+		if(nativePtr == 0L)
+			StreamStats(0f, 0f, 0f, 0f, 0f, 0L, 0L)
+		else
+			ChiakiNative.sessionGetStats(nativePtr)
 
 	fun setLoginPin(pin: String)
 	{

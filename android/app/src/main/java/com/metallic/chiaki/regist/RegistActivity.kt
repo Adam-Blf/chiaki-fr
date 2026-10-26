@@ -7,17 +7,19 @@ import android.os.Bundle
 import android.util.Base64
 import android.view.View
 import android.view.Window
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.metallic.chiaki.R
+import com.metallic.chiaki.common.TvActivity
 import com.metallic.chiaki.common.ext.RevealActivity
 import com.metallic.chiaki.databinding.ActivityRegistBinding
 import com.metallic.chiaki.lib.RegistInfo
 import com.metallic.chiaki.lib.Target
+import com.metallic.chiaki.psn.PsnLoginActivity
 import java.lang.IllegalArgumentException
 
-class RegistActivity: AppCompatActivity(), RevealActivity
+class RegistActivity: TvActivity(), RevealActivity
 {
 	companion object
 	{
@@ -26,8 +28,6 @@ class RegistActivity: AppCompatActivity(), RevealActivity
 		const val EXTRA_ASSIGN_MANUAL_HOST_ID = "assign_manual_host_id"
 
 		private const val PIN_LENGTH = 8
-
-		private const val REQUEST_REGIST = 1
 	}
 
 	private lateinit var viewModel: RegistViewModel
@@ -36,6 +36,20 @@ class RegistActivity: AppCompatActivity(), RevealActivity
 	override val revealWindow: Window get() = window
 	override val revealIntent: Intent get() = intent
 	override val revealRootLayout: View get() = binding.rootLayout
+
+	private val registLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+		if(it.resultCode == RESULT_OK)
+			finish()
+	}
+
+	private val psnLoginLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+		if(it.resultCode != RESULT_OK)
+			return@registerForActivityResult
+		val data = it.data ?: return@registerForActivityResult
+		val accountId = data.getStringExtra(PsnLoginActivity.EXTRA_ACCOUNT_ID)
+		val onlineId = data.getStringExtra(PsnLoginActivity.EXTRA_ONLINE_ID)
+		applyPsnLogin(accountId, onlineId)
+	}
 
 	override fun onCreate(savedInstanceState: Bundle?)
 	{
@@ -50,6 +64,11 @@ class RegistActivity: AppCompatActivity(), RevealActivity
 		binding.broadcastCheckBox.isChecked = intent.getBooleanExtra(EXTRA_BROADCAST, true)
 
 		binding.registButton.setOnClickListener { doRegist() }
+		binding.psnLoginButton.setOnClickListener {
+			psnLoginLauncher.launch(Intent(this, PsnLoginActivity::class.java))
+		}
+		// Typing on a TV is slow: the PSN sign-in button is where the focus starts
+		binding.psnLoginButton.requestFocus()
 
 		binding.ps4VersionRadioGroup.check(when(viewModel.ps4Version.value ?: RegistViewModel.ConsoleVersion.PS5) {
 			RegistViewModel.ConsoleVersion.PS5 -> R.id.ps5RadioButton
@@ -70,7 +89,6 @@ class RegistActivity: AppCompatActivity(), RevealActivity
 		}
 
 		viewModel.ps4Version.observe(this, Observer {
-			binding.psnAccountIdHelpGroup.visibility = if(it == RegistViewModel.ConsoleVersion.PS4_LT_7) View.GONE else View.VISIBLE
 			binding.psnIdTextInputLayout.hint = getString(when(it!!)
 			{
 				RegistViewModel.ConsoleVersion.PS4_LT_7 -> R.string.hint_regist_psn_online_id
@@ -79,6 +97,20 @@ class RegistActivity: AppCompatActivity(), RevealActivity
 			binding.pinHelpBeforeTextView.setText(if(it.isPS5) R.string.regist_pin_instructions_ps5_before else R.string.regist_pin_instructions_ps4_before)
 			binding.pinHelpNavigationTextView.setText(if(it.isPS5) R.string.regist_pin_instructions_ps5_navigation else R.string.regist_pin_instructions_ps4_navigation)
 		})
+	}
+
+	/** Fills the PSN field with what the console generation expects and confirms who is signed in. */
+	private fun applyPsnLogin(accountId: String?, onlineId: String?)
+	{
+		val ps4Version = viewModel.ps4Version.value ?: RegistViewModel.ConsoleVersion.PS5
+		val psnId = if(ps4Version == RegistViewModel.ConsoleVersion.PS4_LT_7) onlineId else accountId
+		if(psnId.isNullOrEmpty())
+			return
+		binding.psnIdEditText.setText(psnId)
+		binding.psnIdEditText.error = null
+		binding.psnLoginStatusTextView.text = getString(R.string.psn_login_success, onlineId ?: getString(R.string.psn_login_unknown_user))
+		binding.psnLoginStatusTextView.visibility = View.VISIBLE
+		binding.pinEditText.requestFocus()
 	}
 
 	private fun doRegist()
@@ -135,14 +167,7 @@ class RegistActivity: AppCompatActivity(), RevealActivity
 			it.putExtra(RegistExecuteActivity.EXTRA_REGIST_INFO, registInfo)
 			if(intent.hasExtra(EXTRA_ASSIGN_MANUAL_HOST_ID))
 				it.putExtra(RegistExecuteActivity.EXTRA_ASSIGN_MANUAL_HOST_ID, intent.getLongExtra(EXTRA_ASSIGN_MANUAL_HOST_ID, 0L))
-			startActivityForResult(it, REQUEST_REGIST)
+			registLauncher.launch(it)
 		}
-	}
-
-	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
-	{
-		super.onActivityResult(requestCode, resultCode, data)
-		if(requestCode == REQUEST_REGIST && resultCode == RESULT_OK)
-			finish()
 	}
 }

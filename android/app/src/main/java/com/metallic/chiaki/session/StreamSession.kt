@@ -3,6 +3,7 @@
 package com.metallic.chiaki.session
 
 import android.graphics.SurfaceTexture
+import android.os.Build
 import android.util.Log
 import android.view.*
 import androidx.lifecycle.LiveData
@@ -27,6 +28,12 @@ class StreamSession(val connectInfo: ConnectInfo, val logManager: LogManager, va
 	val state: LiveData<StreamState> get() = _state
 	private val _rumbleState = MutableLiveData<RumbleEvent>(RumbleEvent(0U, 0U))
 	val rumbleState: LiveData<RumbleEvent> get() = _rumbleState
+
+	/** Ask the display to match the stream frame rate (API 30+), set from Preferences.lowLatency. */
+	var matchDisplayFrameRate = false
+
+	/** Latest transport and decoder statistics, null while there is no session. */
+	fun stats(): StreamStats? = session?.stats()
 
 	private var surfaceTexture: SurfaceTexture? = null
 	private var surface: Surface? = null
@@ -102,6 +109,7 @@ class StreamSession(val connectInfo: ConnectInfo, val logManager: LogManager, va
 			{
 				val surface = holder.surface
 				this@StreamSession.surface = surface
+				applyFrameRateHint(surface)
 				session?.setSurface(surface)
 			}
 
@@ -111,6 +119,21 @@ class StreamSession(val connectInfo: ConnectInfo, val logManager: LogManager, va
 				session?.setSurface(null)
 			}
 		})
+	}
+
+	private fun applyFrameRateHint(surface: Surface)
+	{
+		val maxFps = connectInfo.videoProfile.maxFPS
+		if(!matchDisplayFrameRate || maxFps <= 0 || Build.VERSION.SDK_INT < Build.VERSION_CODES.R || !surface.isValid)
+			return
+		try
+		{
+			surface.setFrameRate(maxFps.toFloat(), Surface.FRAME_RATE_COMPATIBILITY_FIXED_SOURCE)
+		}
+		catch(e: IllegalArgumentException)
+		{
+			Log.w("StreamSession", "setFrameRate rejected: ${e.message}")
+		}
 	}
 
 	fun attachToTextureView(textureView: TextureView)
@@ -138,6 +161,12 @@ class StreamSession(val connectInfo: ConnectInfo, val logManager: LogManager, va
 		val surfaceTexture = surfaceTexture
 		if(surfaceTexture != null)
 			textureView.setSurfaceTexture(surfaceTexture)
+	}
+
+	/** Asks the console to enter rest mode; the stream ends right after. */
+	fun gotoBed()
+	{
+		session?.gotoBed()
 	}
 
 	fun setLoginPin(pin: String)

@@ -3,19 +3,21 @@
 package com.metallic.chiaki.main
 
 import android.app.ActivityOptions
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
+import android.view.KeyEvent
 import android.view.View
-import androidx.activity.addCallback
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.Toast
+import androidx.core.view.doOnLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.metallic.chiaki.R
 import com.metallic.chiaki.common.*
+import com.metallic.chiaki.common.ext.hasTouchscreen
 import com.metallic.chiaki.common.ext.putRevealExtra
 import com.metallic.chiaki.common.ext.viewModelFactory
 import com.metallic.chiaki.databinding.ActivityMainBinding
@@ -25,13 +27,16 @@ import com.metallic.chiaki.manualconsole.EditManualConsoleActivity
 import com.metallic.chiaki.regist.RegistActivity
 import com.metallic.chiaki.settings.SettingsActivity
 import com.metallic.chiaki.stream.StreamActivity
+import kotlin.math.max
 
-class MainActivity : AppCompatActivity()
+class MainActivity : TvActivity()
 {
 	private lateinit var viewModel: MainViewModel
 
 	private lateinit var binding: ActivityMainBinding
-	private var discoveryMenuItem: MenuItem? = null
+
+	/** True until the player presses a key: only then the app may choose the focus on their behalf. */
+	private var focusIsAutomatic = true
 
 	override fun onCreate(savedInstanceState: Bundle?)
 	{
@@ -39,42 +44,71 @@ class MainActivity : AppCompatActivity()
 		binding = ActivityMainBinding.inflate(layoutInflater)
 		setContentView(binding.root)
 
-		title = ""
-		setSupportActionBar(binding.toolbar)
-
-		binding.floatingActionButton.setOnClickListener {
-			expandFloatingActionButton(!binding.floatingActionButton.isExpanded)
-		}
-		binding.floatingActionButtonDialBackground.setOnClickListener {
-			expandFloatingActionButton(false)
-		}
-
-		binding.addManualButton.setOnClickListener { addManualConsole() }
-		binding.addManualLabelButton.setOnClickListener { addManualConsole() }
-
 		binding.registerButton.setOnClickListener { showRegistration() }
-		binding.registerLabelButton.setOnClickListener { showRegistration() }
-
-		setupBackNavigation()
+		binding.addManualButton.setOnClickListener { addManualConsole() }
+		binding.discoverButton.setOnClickListener {
+			viewModel.discoveryManager.active = !(viewModel.discoveryActive.value ?: false)
+		}
+		binding.settingsButton.setOnClickListener {
+			startActivity(Intent(this, SettingsActivity::class.java))
+		}
+		binding.hintTextView.visibility = if(hasTouchscreen) View.GONE else View.VISIBLE
 
 		viewModel = ViewModelProvider(this, viewModelFactory { MainViewModel(getDatabase(this), Preferences(this)) })
 			.get(MainViewModel::class.java)
 
-		val recyclerViewAdapter = DisplayHostRecyclerViewAdapter(this::hostTriggered, this::wakeupHost, this::editHost, this::deleteHost)
+		val recyclerViewAdapter = DisplayHostRecyclerViewAdapter(this::hostTriggered, this::showHostActions)
 		binding.hostsRecyclerView.adapter = recyclerViewAdapter
-		binding.hostsRecyclerView.layoutManager = LinearLayoutManager(this)
+		binding.hostsRecyclerView.layoutManager = GridLayoutManager(this, computeSpanCount())
+		// A cross-fade replaces the view holder, and the focused card would lose the focus with it
+		(binding.hostsRecyclerView.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
 		viewModel.displayHosts.observe(this, Observer {
 			val top = binding.hostsRecyclerView.computeVerticalScrollOffset() == 0
 			recyclerViewAdapter.hosts = it
 			if(top)
 				binding.hostsRecyclerView.scrollToPosition(0)
 			updateEmptyInfo()
+			updateAutomaticFocus()
 		})
 
 		viewModel.discoveryActive.observe(this, Observer { active ->
-			discoveryMenuItem?.let { updateDiscoveryMenuItem(it, active) }
+			binding.discoverButton.setText(if(active) R.string.action_discover_on else R.string.action_discover_off)
 			updateEmptyInfo()
 		})
+
+		updateAutomaticFocus()
+	}
+
+	private fun computeSpanCount(): Int
+	{
+		val usableWidth = resources.displayMetrics.widthPixels - 2 * resources.getDimensionPixelSize(R.dimen.overscan_horizontal)
+		return max(1, usableWidth / resources.getDimensionPixelSize(R.dimen.host_card_min_width))
+	}
+
+	/** Initial focus: the first console card when there is one, the "register" button otherwise. */
+	private fun updateAutomaticFocus()
+	{
+		if(!focusIsAutomatic)
+			return
+		binding.hostsRecyclerView.doOnLayout {
+			if(!focusIsAutomatic)
+				return@doOnLayout
+			val firstCard = binding.hostsRecyclerView.findViewHolderForAdapterPosition(0)?.itemView
+			if(firstCard != null)
+			{
+				firstCard.requestFocus()
+				focusIsAutomatic = false
+			}
+			else if(!binding.registerButton.hasFocus())
+				binding.registerButton.requestFocus()
+		}
+	}
+
+	override fun dispatchKeyEvent(event: KeyEvent): Boolean
+	{
+		if(event.action == KeyEvent.ACTION_DOWN)
+			focusIsAutomatic = false
+		return super.dispatchKeyEvent(event)
 	}
 
 	private fun updateEmptyInfo()
@@ -83,17 +117,10 @@ class MainActivity : AppCompatActivity()
 		{
 			binding.emptyInfoLayout.visibility = View.VISIBLE
 			val discoveryActive = viewModel.discoveryActive.value ?: false
-			binding.emptyInfoImageView.setImageResource(if(discoveryActive) R.drawable.ic_discover_on else R.drawable.ic_discover_off)
 			binding.emptyInfoTextView.setText(if(discoveryActive) R.string.display_hosts_empty_discovery_on_info else R.string.display_hosts_empty_discovery_off_info)
 		}
 		else
 			binding.emptyInfoLayout.visibility = View.GONE
-	}
-
-	private fun expandFloatingActionButton(expand: Boolean)
-	{
-		binding.floatingActionButton.isExpanded = expand
-		binding.floatingActionButton.isActivated = binding.floatingActionButton.isExpanded
 	}
 
 	override fun onStart()
@@ -108,70 +135,25 @@ class MainActivity : AppCompatActivity()
 		viewModel.discoveryManager.pause()
 	}
 
-	private fun setupBackNavigation()
+	private fun startWithReveal(intent: Intent, origin: View)
 	{
-		onBackPressedDispatcher.addCallback(this) {
-			if(binding.floatingActionButton.isExpanded)
-			{
-				expandFloatingActionButton(false)
-			}
-			else
-			{
-				isEnabled = false
-				onBackPressedDispatcher.onBackPressed()
-			}
-		}
-	}
-
-	override fun onCreateOptionsMenu(menu: Menu): Boolean
-	{
-		menuInflater.inflate(R.menu.main, menu)
-		val discoveryItem = menu.findItem(R.id.action_discover)
-		discoveryMenuItem = discoveryItem
-		val discoveryActive = viewModel.discoveryActive.value ?: false
-		updateDiscoveryMenuItem(discoveryItem, discoveryActive)
-		return true
-	}
-
-	private fun updateDiscoveryMenuItem(item: MenuItem, active: Boolean)
-	{
-		item.isChecked = active
-		item.setIcon(if(active) R.drawable.ic_discover_on else R.drawable.ic_discover_off)
-	}
-
-	override fun onOptionsItemSelected(item: MenuItem): Boolean = when(item.itemId)
-	{
-		R.id.action_discover ->
+		if(hasTouchscreen)
 		{
-			viewModel.discoveryManager.active = !(viewModel.discoveryActive.value ?: false)
-			true
+			intent.putRevealExtra(origin, binding.rootLayout)
+			startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
 		}
-
-		R.id.action_settings ->
-		{
-			Intent(this, SettingsActivity::class.java).also {
-				startActivity(it)
-			}
-			true
-		}
-
-		else -> super.onOptionsItemSelected(item)
+		else
+			startActivity(intent)
 	}
 
 	private fun addManualConsole()
 	{
-		Intent(this, EditManualConsoleActivity::class.java).also {
-			it.putRevealExtra(binding.addManualButton, binding.rootLayout)
-			startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-		}
+		startWithReveal(Intent(this, EditManualConsoleActivity::class.java), binding.addManualButton)
 	}
 
 	private fun showRegistration()
 	{
-		Intent(this, RegistActivity::class.java).also {
-			it.putRevealExtra(binding.registerButton, binding.rootLayout)
-			startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-		}
+		startWithReveal(Intent(this, RegistActivity::class.java), binding.registerButton)
 	}
 
 	private fun hostTriggered(host: DisplayHost)
@@ -180,9 +162,11 @@ class MainActivity : AppCompatActivity()
 		if(registeredHost != null)
 		{
 			fun connect() {
-				val connectInfo = ConnectInfo(host.isPS5, host.host, registeredHost.rpRegistKey, registeredHost.rpKey, Preferences(this).videoProfile)
+				val preferences = Preferences(this)
+				val connectInfo = ConnectInfo(host.isPS5, host.host, registeredHost.rpRegistKey, registeredHost.rpKey, preferences.videoProfile, lowLatency = preferences.lowLatency)
 				Intent(this, StreamActivity::class.java).let {
 					it.putExtra(StreamActivity.EXTRA_CONNECT_INFO, connectInfo)
+					it.putExtra(StreamActivity.EXTRA_CONSOLE_NAME, host.name)
 					startActivity(it)
 				}
 			}
@@ -199,7 +183,7 @@ class MainActivity : AppCompatActivity()
 					}
 					.setNegativeButton(R.string.action_connect_cancel_connect) { _, _ -> }
 					.create()
-					.show()
+					.showWithFocus(DialogInterface.BUTTON_POSITIVE)
 			}
 			else
 				connect()
@@ -216,10 +200,38 @@ class MainActivity : AppCompatActivity()
 		}
 	}
 
+	/** Long press (or long OK) on a card: wake up, edit, delete. Replaces the overflow menu. */
+	private fun showHostActions(host: DisplayHost)
+	{
+		val actions = mutableListOf<Pair<Int, () -> Unit>>()
+		if(host.registeredHost != null)
+			actions.add(R.string.action_wakeup to { wakeupHost(host) })
+		if(host is ManualDisplayHost)
+		{
+			actions.add(R.string.action_edit to { editHost(host) })
+			actions.add(R.string.action_delete to { deleteHost(host) })
+		}
+		if(actions.isEmpty())
+		{
+			hostTriggered(host)
+			return
+		}
+
+		MaterialAlertDialogBuilder(this)
+			.setTitle(host.name ?: host.host)
+			.setItems(actions.map { getString(it.first) }.toTypedArray()) { _, which ->
+				actions[which].second()
+			}
+			.setNegativeButton(R.string.action_cancel, null)
+			.create()
+			.showWithFocus(null)
+	}
+
 	private fun wakeupHost(host: DisplayHost)
 	{
 		val registeredHost = host.registeredHost ?: return
 		viewModel.discoveryManager.sendWakeup(host.host, registeredHost.rpRegistKey, registeredHost.target.isPS5)
+		Toast.makeText(this, getString(R.string.toast_wakeup_sent, host.name ?: host.host), Toast.LENGTH_LONG).show()
 	}
 
 	private fun editHost(host: DisplayHost)
@@ -243,6 +255,6 @@ class MainActivity : AppCompatActivity()
 			}
 			.setNegativeButton(R.string.action_keep) { _, _ -> }
 			.create()
-			.show()
+			.showWithFocus(DialogInterface.BUTTON_NEGATIVE)
 	}
 }
