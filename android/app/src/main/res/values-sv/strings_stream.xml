@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stream_menu_title">Spelmeny</string>
+    <string name="stream_menu_stats">Statistik</string>
+    <string name="stream_menu_display_mode">Visning</string>
+    <string name="stream_display_mode_fit">Anpassa</string>
+    <string name="stream_display_mode_zoom">Zooma</string>
+    <string name="stream_display_mode_stretch">Sträck ut</string>
+    <string name="stream_menu_resume">Fortsätt spela</string>
+    <string name="stream_menu_quit">Avsluta spel</string>
+    <string name="stream_menu_hint">A: OK, B: stäng</string>
+    <string name="stream_connecting_title">Ansluter till %1$s...</string>
+    <string name="stream_connecting_hint">Tryck Bakåt för att avbryta</string>
+    <string name="stream_stats_format">%1$s fps | %2$s Mbit/s | %3$s ms | avkodning %4$s ms | förlust %5$s %%</string>
+    <string name="stream_stats_diag_ok">Diagnos: OK</string>
+    <string name="stream_stats_diag_network">Diagnos: nätverk</string>
+    <string name="stream_stats_diag_decoder">Diagnos: avkodare</string>
+    <string name="stream_menu_sleep">Sätt konsolen i viloläge</string>
+</resources>

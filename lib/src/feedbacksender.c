@@ -5,7 +5,7 @@
 
 #include <string.h>
 
-#define FEEDBACK_STATE_TIMEOUT_MIN_MS 8 // minimum time to wait between sending 2 packets
+#define FEEDBACK_STATE_TIMEOUT_MIN_MS 4 // minimum time to wait between sending 2 packets
 #define FEEDBACK_STATE_TIMEOUT_MAX_MS 200 // maximum time to wait between sending 2 packets
 
 #define FEEDBACK_HISTORY_BUFFER_SIZE 0x10

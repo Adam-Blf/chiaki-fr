@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stream_menu_title">Μενού παιχνιδιού</string>
+    <string name="stream_menu_stats">Στατιστικά</string>
+    <string name="stream_menu_display_mode">Εμφάνιση</string>
+    <string name="stream_display_mode_fit">Προσαρμογή</string>
+    <string name="stream_display_mode_zoom">Ζουμ</string>
+    <string name="stream_display_mode_stretch">Τέντωμα</string>
+    <string name="stream_menu_resume">Συνέχεια παιχνιδιού</string>
+    <string name="stream_menu_quit">Έξοδος από το παιχνίδι</string>
+    <string name="stream_menu_hint">A: OK, B: κλείσιμο</string>
+    <string name="stream_connecting_title">Σύνδεση με %1$s...</string>
+    <string name="stream_connecting_hint">Πατήστε Πίσω για ακύρωση</string>
+    <string name="stream_stats_format">%1$s fps | %2$s Mbit/s | %3$s ms | αποκωδικοποίηση %4$s ms | απώλεια %5$s %%</string>
+    <string name="stream_stats_diag_ok">Διάγνωση: OK</string>
+    <string name="stream_stats_diag_network">Διάγνωση: δίκτυο</string>
+    <string name="stream_stats_diag_decoder">Διάγνωση: αποκωδικοποιητής</string>
+    <string name="stream_menu_sleep">Θέση κονσόλας σε ηρεμία</string>
+</resources>

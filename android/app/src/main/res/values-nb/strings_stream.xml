@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stream_menu_title">Spillmeny</string>
+    <string name="stream_menu_stats">Statistikk</string>
+    <string name="stream_menu_display_mode">Visning</string>
+    <string name="stream_display_mode_fit">Tilpass</string>
+    <string name="stream_display_mode_zoom">Zoom</string>
+    <string name="stream_display_mode_stretch">Strekk</string>
+    <string name="stream_menu_resume">Fortsett spillet</string>
+    <string name="stream_menu_quit">Avslutt spillet</string>
+    <string name="stream_menu_hint">A: OK, B: lukk</string>
+    <string name="stream_connecting_title">Kobler til %1$s...</string>
+    <string name="stream_connecting_hint">Trykk Tilbake for å avbryte</string>
+    <string name="stream_stats_format">%1$s fps | %2$s Mbit/s | %3$s ms | dekoding %4$s ms | tap %5$s %%</string>
+    <string name="stream_stats_diag_ok">Diagnose: OK</string>
+    <string name="stream_stats_diag_network">Diagnose: nettverk</string>
+    <string name="stream_stats_diag_decoder">Diagnose: dekoder</string>
+    <string name="stream_menu_sleep">Sett konsollen i hvilemodus</string>
+</resources>

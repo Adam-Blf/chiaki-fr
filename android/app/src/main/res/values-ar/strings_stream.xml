@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stream_menu_title">قائمة اللعبة</string>
+    <string name="stream_menu_stats">الإحصاءات</string>
+    <string name="stream_menu_display_mode">العرض</string>
+    <string name="stream_display_mode_fit">ملاءمة</string>
+    <string name="stream_display_mode_zoom">تكبير</string>
+    <string name="stream_display_mode_stretch">تمديد</string>
+    <string name="stream_menu_resume">متابعة اللعب</string>
+    <string name="stream_menu_quit">الخروج من اللعبة</string>
+    <string name="stream_menu_hint">A: موافق، B: إغلاق</string>
+    <string name="stream_connecting_title">جارٍ الاتصال بـ %1$s...</string>
+    <string name="stream_connecting_hint">اضغط رجوع للإلغاء</string>
+    <string name="stream_stats_format">%1$s fps | %2$s Mbit/s | %3$s ms | فك الترميز %4$s ms | الفقد %5$s %%</string>
+    <string name="stream_stats_diag_ok">التشخيص: سليم</string>
+    <string name="stream_stats_diag_network">التشخيص: الشبكة</string>
+    <string name="stream_stats_diag_decoder">التشخيص: فك الترميز</string>
+    <string name="stream_menu_sleep">وضع الجهاز في وضع الراحة</string>
+</resources>

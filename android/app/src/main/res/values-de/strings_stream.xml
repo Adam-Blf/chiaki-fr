@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stream_menu_title">Spielmenü</string>
+    <string name="stream_menu_stats">Statistiken</string>
+    <string name="stream_menu_display_mode">Anzeige</string>
+    <string name="stream_display_mode_fit">Einpassen</string>
+    <string name="stream_display_mode_zoom">Zoom</string>
+    <string name="stream_display_mode_stretch">Strecken</string>
+    <string name="stream_menu_resume">Weiterspielen</string>
+    <string name="stream_menu_quit">Spiel beenden</string>
+    <string name="stream_menu_hint">A: OK, B: schließen</string>
+    <string name="stream_connecting_title">Verbinde mit %1$s...</string>
+    <string name="stream_connecting_hint">Zurück drücken zum Abbrechen</string>
+    <string name="stream_stats_format">%1$s fps | %2$s Mbit/s | %3$s ms | Dekodierung %4$s ms | Verlust %5$s %%</string>
+    <string name="stream_stats_diag_ok">Diagnose: OK</string>
+    <string name="stream_stats_diag_network">Diagnose: Netzwerk</string>
+    <string name="stream_stats_diag_decoder">Diagnose: Decoder</string>
+    <string name="stream_menu_sleep">Konsole in den Ruhemodus versetzen</string>
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stream_menu_title">遊戲選單</string>
+    <string name="stream_menu_stats">統計</string>
+    <string name="stream_menu_display_mode">顯示</string>
+    <string name="stream_display_mode_fit">符合</string>
+    <string name="stream_display_mode_zoom">縮放</string>
+    <string name="stream_display_mode_stretch">延展</string>
+    <string name="stream_menu_resume">繼續遊戲</string>
+    <string name="stream_menu_quit">結束遊戲</string>
+    <string name="stream_menu_hint">A：確定，B：關閉</string>
+    <string name="stream_connecting_title">正在連線至 %1$s...</string>
+    <string name="stream_connecting_hint">按返回鍵取消</string>
+    <string name="stream_stats_format">%1$s fps | %2$s Mbit/s | %3$s ms | 解碼 %4$s ms | 遺失 %5$s %%</string>
+    <string name="stream_stats_diag_ok">診斷：正常</string>
+    <string name="stream_stats_diag_network">診斷：網路</string>
+    <string name="stream_stats_diag_decoder">診斷：解碼器</string>
+    <string name="stream_menu_sleep">讓主機進入待機</string>
+</resources>

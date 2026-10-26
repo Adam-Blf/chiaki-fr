@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stream_menu_title">ゲームメニュー</string>
+    <string name="stream_menu_stats">統計</string>
+    <string name="stream_menu_display_mode">表示</string>
+    <string name="stream_display_mode_fit">フィット</string>
+    <string name="stream_display_mode_zoom">ズーム</string>
+    <string name="stream_display_mode_stretch">引き伸ばし</string>
+    <string name="stream_menu_resume">ゲームに戻る</string>
+    <string name="stream_menu_quit">ゲームを終了</string>
+    <string name="stream_menu_hint">A: 決定, B: 閉じる</string>
+    <string name="stream_connecting_title">%1$s に接続中...</string>
+    <string name="stream_connecting_hint">戻るでキャンセル</string>
+    <string name="stream_stats_format">%1$s fps | %2$s Mbit/s | %3$s ms | デコード %4$s ms | ロス %5$s %%</string>
+    <string name="stream_stats_diag_ok">診断: OK</string>
+    <string name="stream_stats_diag_network">診断: ネットワーク</string>
+    <string name="stream_stats_diag_decoder">診断: デコーダー</string>
+    <string name="stream_menu_sleep">コンソールをスタンバイにする</string>
+</resources>

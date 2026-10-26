@@ -6,17 +6,21 @@ import android.app.Activity
 import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
-import android.text.InputType
+import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.metallic.chiaki.R
 import com.metallic.chiaki.common.Preferences
 import com.metallic.chiaki.common.exportAndShareAllSettings
+import com.metallic.chiaki.common.ext.hasTouchscreen
+import com.metallic.chiaki.common.ext.requestFocusOnFirstItem
 import com.metallic.chiaki.common.ext.viewModelFactory
 import com.metallic.chiaki.common.getDatabase
 import com.metallic.chiaki.common.importSettingsFromUri
+import com.metallic.chiaki.common.showWithFocus
 
 class DataStore(val preferences: Preferences): PreferenceDataStore()
 {
@@ -27,6 +31,8 @@ class DataStore(val preferences: Preferences): PreferenceDataStore()
 		preferences.rumbleEnabledKey -> preferences.rumbleEnabled
 		preferences.motionEnabledKey -> preferences.motionEnabled
 		preferences.buttonHapticEnabledKey -> preferences.buttonHapticEnabled
+		preferences.lowLatencyKey -> preferences.lowLatency
+		preferences.statsOverlayEnabledKey -> preferences.statsOverlayEnabled
 		else -> defValue
 	}
 
@@ -39,6 +45,8 @@ class DataStore(val preferences: Preferences): PreferenceDataStore()
 			preferences.rumbleEnabledKey -> preferences.rumbleEnabled = value
 			preferences.motionEnabledKey -> preferences.motionEnabled = value
 			preferences.buttonHapticEnabledKey -> preferences.buttonHapticEnabled = value
+			preferences.lowLatencyKey -> preferences.lowLatency = value
+			preferences.statsOverlayEnabledKey -> preferences.statsOverlayEnabled = value
 		}
 	}
 
@@ -46,7 +54,7 @@ class DataStore(val preferences: Preferences): PreferenceDataStore()
 	{
 		preferences.resolutionKey -> preferences.resolution.value
 		preferences.fpsKey -> preferences.fps.value
-		preferences.bitrateKey -> preferences.bitrate?.toString() ?: ""
+		preferences.bitrateKey -> (preferences.bitrate ?: 0).toString()
 		preferences.codecKey -> preferences.codec.value
 		else -> defValue
 	}
@@ -65,7 +73,8 @@ class DataStore(val preferences: Preferences): PreferenceDataStore()
 				val fps = Preferences.FPS.values().firstOrNull { it.value == value } ?: return
 				preferences.fps = fps
 			}
-			preferences.bitrateKey -> preferences.bitrate = value?.toIntOrNull()
+			// "0" is the "Auto" entry
+			preferences.bitrateKey -> preferences.bitrate = value?.toIntOrNull()?.takeIf { it > 0 }
 			preferences.codecKey ->
 			{
 				val codec = Preferences.Codec.values().firstOrNull { it.value == value } ?: return
@@ -93,6 +102,13 @@ class SettingsFragment: PreferenceFragmentCompat(), TitleFragment
 		preferenceManager.preferenceDataStore = DataStore(preferences)
 		setPreferencesFromResource(R.xml.preferences, rootKey)
 
+		// Vibration motor and motion sensors only exist on phones and tablets
+		if(!context.hasTouchscreen)
+		{
+			listOf(R.string.preferences_rumble_enabled_key, R.string.preferences_motion_enabled_key, R.string.preferences_button_haptic_enabled_key)
+				.forEach { preferenceScreen.findPreference<Preference>(getString(it))?.isVisible = false }
+		}
+
 		preferenceScreen.findPreference<ListPreference>(getString(R.string.preferences_resolution_key))?.let {
 			it.entryValues = Preferences.resolutionAll.map { res -> res.value }.toTypedArray()
 			it.entries = Preferences.resolutionAll.map { res -> getString(res.title) }.toTypedArray()
@@ -103,18 +119,24 @@ class SettingsFragment: PreferenceFragmentCompat(), TitleFragment
 			it.entries = Preferences.fpsAll.map { fps -> getString(fps.title) }.toTypedArray()
 		}
 
-		val bitratePreference = preferenceScreen.findPreference<EditTextPreference>(getString(R.string.preferences_bitrate_key))
-		val bitrateSummaryProvider = Preference.SummaryProvider<EditTextPreference> {
-			preferences.bitrate?.toString() ?: getString(R.string.preferences_bitrate_auto, preferences.bitrateAuto)
-		}
+		val bitratePreference = preferenceScreen.findPreference<ListPreference>(getString(R.string.preferences_bitrate_key))
+		fun formatMbps(kbps: Int) = if(kbps % 1000 == 0) (kbps / 1000).toString() else String.format("%.1f", kbps / 1000f)
 		bitratePreference?.let {
-			it.summaryProvider = bitrateSummaryProvider
-			it.setOnBindEditTextListener { editText ->
-				editText.hint = getString(R.string.preferences_bitrate_auto, preferences.bitrateAuto)
-				editText.inputType = InputType.TYPE_CLASS_NUMBER
-				editText.setText(preferences.bitrate?.toString() ?: "")
-			}
+			// A value imported or set before the presets existed is kept in the list
+			val kbpsValues = (listOf(0) + Preferences.bitratePresetsKbps + listOfNotNull(preferences.bitrate)).distinct().sorted()
+			it.entryValues = kbpsValues.map { kbps -> kbps.toString() }.toTypedArray()
+			it.entries = kbpsValues.map { kbps ->
+				if(kbps == 0) getString(R.string.preferences_bitrate_entry_auto) else getString(R.string.preferences_bitrate_entry_mbps, formatMbps(kbps))
+			}.toTypedArray()
 		}
+		val bitrateSummaryProvider = Preference.SummaryProvider<ListPreference> {
+			val bitrate = preferences.bitrate
+			if(bitrate == null)
+				getString(R.string.preferences_bitrate_auto, formatMbps(preferences.bitrateAuto))
+			else
+				getString(R.string.preferences_bitrate_entry_mbps, formatMbps(bitrate))
+		}
+		bitratePreference?.summaryProvider = bitrateSummaryProvider
 		viewModel.bitrateAuto.observe(this, Observer {
 			bitratePreference?.summaryProvider = bitrateSummaryProvider
 		})
@@ -131,6 +153,39 @@ class SettingsFragment: PreferenceFragmentCompat(), TitleFragment
 
 		preferenceScreen.findPreference<Preference>(getString(R.string.preferences_export_settings_key))?.setOnPreferenceClickListener { exportSettings(); true }
 		preferenceScreen.findPreference<Preference>(getString(R.string.preferences_import_settings_key))?.setOnPreferenceClickListener { importSettings(); true }
+	}
+
+	override fun onViewCreated(view: View, savedInstanceState: Bundle?)
+	{
+		super.onViewCreated(view, savedInstanceState)
+		listView.clipToPadding = false
+		listView.requestFocusOnFirstItem()
+	}
+
+	/**
+	 * Lists are shown with our own dialog so that the gamepad mapping (A = OK, B = Cancel)
+	 * and the focus on the current choice apply to them too.
+	 */
+	override fun onDisplayPreferenceDialog(preference: Preference)
+	{
+		if(preference !is ListPreference)
+		{
+			super.onDisplayPreferenceDialog(preference)
+			return
+		}
+		val entries = preference.entries ?: return
+		val values = preference.entryValues ?: return
+		MaterialAlertDialogBuilder(requireContext())
+			.setTitle(preference.dialogTitle ?: preference.title)
+			.setSingleChoiceItems(entries, preference.findIndexOfValue(preference.value)) { dialog, which ->
+				val value = values[which].toString()
+				if(preference.callChangeListener(value))
+					preference.value = value
+				dialog.dismiss()
+			}
+			.setNegativeButton(R.string.action_cancel, null)
+			.create()
+			.showWithFocus(null)
 	}
 
 	override fun getTitle(resources: Resources): String = resources.getString(R.string.title_settings)

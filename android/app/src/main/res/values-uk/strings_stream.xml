@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stream_menu_title">Ігрове меню</string>
+    <string name="stream_menu_stats">Статистика</string>
+    <string name="stream_menu_display_mode">Екран</string>
+    <string name="stream_display_mode_fit">Вписати</string>
+    <string name="stream_display_mode_zoom">Зум</string>
+    <string name="stream_display_mode_stretch">Розтягнути</string>
+    <string name="stream_menu_resume">Продовжити гру</string>
+    <string name="stream_menu_quit">Вийти з гри</string>
+    <string name="stream_menu_hint">A: OK, B: закрити</string>
+    <string name="stream_connecting_title">Підключення до %1$s...</string>
+    <string name="stream_connecting_hint">Натисніть Назад, щоб скасувати</string>
+    <string name="stream_stats_format">%1$s fps | %2$s Mbit/s | %3$s мс | декодування %4$s мс | втрати %5$s %%</string>
+    <string name="stream_stats_diag_ok">Діагностика: OK</string>
+    <string name="stream_stats_diag_network">Діагностика: мережа</string>
+    <string name="stream_stats_diag_decoder">Діагностика: декодер</string>
+    <string name="stream_menu_sleep">Перевести консоль у режим спокою</string>
+</resources>

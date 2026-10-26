@@ -1,15 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#162d50</color>
-    <color name="primary_dark">#000128</color>
-    <color name="accent">#ffaaee</color>
+    <!-- Deep Blue palette: near-black blue backgrounds, translucent dark cards, one blue accent, white focus ring.
+         Contrast (WCAG): text_primary on surface_card 15:1, text_secondary on surface_card 8:1,
+         accent_text (blue used as text) on surface_card or ink 6:1 and more, on_accent on accent 4.8:1.
+         accent_light is for fills, glows and icons only (4.0:1 on a focused card, not for text). -->
+    <color name="ink">#000614</color>
+    <color name="ink_end">#04122B</color>
+    <color name="surface">#0B1426</color>
+    <color name="surface_raised">#1A2238</color>
+    <color name="surface_card">#D91A2238</color>
+    <color name="surface_card_focused">#E6232E4D</color>
+    <color name="surface_pill">#26FFFFFF</color>
+    <color name="surface_pill_focused">#40FFFFFF</color>
+    <color name="outline_subtle">#2B3550</color>
+    <color name="outline_strong">#7482A0</color>
+    <color name="focus_ring">#FFFFFF</color>
+    <color name="focus_fill">#1FFFFFFF</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B4BCCB</color>
+    <color name="accent">#0070D1</color>
+    <color name="accent_light">#1F8FFF</color>
+    <color name="accent_text">#5CB0FF</color>
+    <color name="on_accent">#FFFFFF</color>
+    <color name="accent_container">#12305C</color>
+    <color name="state_ready">#4AE3A0</color>
+    <color name="state_standby">#7DB8FF</color>
+    <color name="state_registered">#B4BCCB</color>
+    <color name="state_unregistered">#FFC54D</color>
+    <color name="danger">#FF6B7A</color>
+
+    <!-- Kept for the stream layouts owned by another module: same values as the new palette -->
+    <color name="primary">@color/surface</color>
+    <color name="primary_dark">@color/ink</color>
 
     <color name="stream_text">@android:color/white</color>
     <color name="stream_background">@android:color/black</color>
     <color name="stream_overlay_background">#77000000</color>
-
-    <color name="floating_action_button_speed_dial_background">#fafafa</color>
-    <color name="floating_action_button_speed_dial_tint">#333333</color>
+    <color name="stream_panel">#E60B1426</color>
+    <color name="stream_secondary">#B4BCCB</color>
 
     <color name="control_primary">#22ffffff</color>
     <color name="control_pressed">#88ffffff</color>

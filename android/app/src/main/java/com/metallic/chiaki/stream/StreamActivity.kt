@@ -9,6 +9,7 @@ import android.graphics.Matrix
 import android.os.*
 import android.view.*
 import android.widget.EditText
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
 import androidx.lifecycle.lifecycleScope
@@ -22,7 +23,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.metallic.chiaki.R
-import com.metallic.chiaki.common.Preferences
 import com.metallic.chiaki.common.ext.viewModelFactory
 import com.metallic.chiaki.databinding.ActivityStreamBinding
 import com.metallic.chiaki.lib.ConnectInfo
@@ -34,7 +34,6 @@ import com.metallic.chiaki.touchcontrols.TouchpadOnlyFragment
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlin.math.min
 
 private sealed class DialogContents
 private object StreamQuitDialog: DialogContents()
@@ -46,12 +45,19 @@ class StreamActivity : AppCompatActivity()
 	companion object
 	{
 		const val EXTRA_CONNECT_INFO = "connect_info"
+		/** Optional display name of the console for the connecting card, defaults to its host. */
+		const val EXTRA_CONSOLE_NAME = "console_name"
 		private const val HIDE_UI_TIMEOUT_MS = 2000L
 	}
 
 	private lateinit var viewModel: StreamViewModel
 	private lateinit var binding: ActivityStreamBinding
 	private lateinit var insetsController: WindowInsetsControllerCompat
+
+	private lateinit var menu: StreamMenu
+	private lateinit var statsOverlay: StatsOverlay
+	private var controllerRumble: ControllerRumble? = null
+	private val wifiLock by lazy { LowLatencyWifiLock(this) }
 
 	private val uiVisibilityHandler = Handler(Looper.getMainLooper())
 
@@ -74,6 +80,17 @@ class StreamActivity : AppCompatActivity()
 
 		binding = ActivityStreamBinding.inflate(layoutInflater)
 		setContentView(binding.root)
+
+		if(viewModel.preferences.lowLatency)
+		{
+			window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+				window.setPreferMinimalPostProcessing(true)
+		}
+
+		// no touchscreen (TV box): the touch switches have no use, the stream menu replaces them
+		if(!viewModel.hasTouchscreen)
+			binding.overlay.isGone = true
 
 		WindowCompat.setDecorFitsSystemWindows(window, false)
 		insetsController = WindowCompat.getInsetsController(window, window.decorView)
@@ -115,25 +132,78 @@ class StreamActivity : AppCompatActivity()
 			showOverlay()
 		}
 
+		setupStreamMenu()
+		setupInputCallbacks()
+		setupStatsOverlay()
+		setupRumble()
+
+		val consoleName = intent.getStringExtra(EXTRA_CONSOLE_NAME) ?: connectInfo.host
+		binding.connectingTitle.text = getString(R.string.stream_connecting_title, consoleName)
+
+		// safety net for predictive back: same behaviour as the Back key, never an accidental exit
+		onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
+			override fun handleOnBackPressed()
+			{
+				if(viewModel.session.state.value == StreamStateConnecting)
+					finish()
+				else
+					menu.toggle()
+			}
+		})
+
 		//viewModel.session.attachToTextureView(textureView)
 		viewModel.session.attachToSurfaceView(binding.surfaceView)
 		viewModel.session.state.observe(this, Observer { this.stateChanged(it) })
 		adjustStreamViewAspect()
+	}
 
-		if(Preferences(this).rumbleEnabled)
-		{
-			val vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
-			viewModel.session.rumbleState.observe(this, Observer {
-				val amplitude = min(255, (it.left.toInt() + it.right.toInt()) / 2)
-				vibrator.cancel()
-				if(amplitude == 0)
-					return@Observer
-				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-					vibrator.vibrate(VibrationEffect.createOneShot(1000, amplitude))
-				else
-					vibrator.vibrate(1000)
-			})
-		}
+	private fun setupStreamMenu()
+	{
+		menu = StreamMenu(
+			binding,
+			onOpenChanged = { open ->
+				viewModel.input.menuOpen = open
+				if(open)
+					controllerRumble?.cancel()
+			},
+			onStatsChanged = { enabled ->
+				viewModel.preferences.statsOverlayEnabled = enabled
+				statsOverlay.enabled = enabled
+			},
+			onSleep = {
+				viewModel.session.gotoBed()
+				finish()
+			},
+			onQuit = { finish() })
+		menu.statsEnabled = viewModel.preferences.statsOverlayEnabled
+	}
+
+	private fun setupInputCallbacks()
+	{
+		viewModel.input.gamepadActivity = { viewModel.setGamepadUsed(true) }
+		viewModel.input.exitRequested = { menu.toggle() }
+		viewModel.input.menuRequested = { menu.open() }
+		viewModel.input.menuAction = { menu.onAction(it) }
+	}
+
+	private fun setupStatsOverlay()
+	{
+		statsOverlay = StatsOverlay(binding, viewModel.connectInfo.videoProfile.maxFPS) { viewModel.session.stats() }
+		statsOverlay.enabled = viewModel.preferences.statsOverlayEnabled
+	}
+
+	private fun setupRumble()
+	{
+		if(!viewModel.preferences.rumbleEnabled)
+			return
+		val rumble = ControllerRumble(this)
+		controllerRumble = rumble
+		viewModel.session.rumbleState.observe(this, Observer {
+			if(menu.isOpen)
+				rumble.cancel()
+			else
+				rumble.rumble(viewModel.input.activeDevice, it.left.toInt(), it.right.toInt())
+		})
 	}
 
 	private var controlsJob: Job? = null
@@ -147,9 +217,9 @@ class StreamActivity : AppCompatActivity()
 			controlsJob = fragment.controllerState
 				.onEach { viewModel.input.touchControllerState = it }
 				.launchIn(lifecycleScope)
-			fragment.onScreenControlsEnabled = viewModel.onScreenControlsEnabled
+			fragment.onScreenControlsEnabled = viewModel.onScreenControlsVisible
 			if(fragment is TouchpadOnlyFragment)
-				fragment.touchpadOnlyEnabled = viewModel.touchpadOnlyEnabled
+				fragment.touchpadOnlyEnabled = viewModel.touchpadOnlyVisible
 		}
 	}
 
@@ -157,12 +227,19 @@ class StreamActivity : AppCompatActivity()
 	{
 		super.onResume()
 		hideSystemUI()
+		if(viewModel.preferences.lowLatency)
+			wifiLock.acquire()
+		statsOverlay.start()
 		viewModel.session.resume()
 	}
 
 	override fun onPause()
 	{
 		super.onPause()
+		viewModel.input.releaseAll()
+		controllerRumble?.cancel()
+		statsOverlay.stop()
+		wifiLock.release()
 		viewModel.session.pause()
 	}
 
@@ -170,6 +247,13 @@ class StreamActivity : AppCompatActivity()
 	{
 		super.onDestroy()
 		controlsJob?.cancel()
+		if(isFinishing)
+		{
+			viewModel.input.gamepadActivity = null
+			viewModel.input.exitRequested = null
+			viewModel.input.menuRequested = null
+			viewModel.input.menuAction = null
+		}
 	}
 
 	private fun reconnect()
@@ -182,6 +266,8 @@ class StreamActivity : AppCompatActivity()
 
 	private fun showOverlay()
 	{
+		if(!viewModel.hasTouchscreen || (::menu.isInitialized && menu.isOpen))
+			return
 		binding.overlay.isVisible = true
 		binding.overlay.animate()
 			.alpha(1.0f)
@@ -232,7 +318,7 @@ class StreamActivity : AppCompatActivity()
 
 	private fun stateChanged(state: StreamState)
 	{
-		binding.progressBar.visibility = if(state == StreamStateConnecting) View.VISIBLE else View.GONE
+		binding.connectingCard.visibility = if(state == StreamStateConnecting) View.VISIBLE else View.GONE
 
 		when(state)
 		{
@@ -344,64 +430,27 @@ class StreamActivity : AppCompatActivity()
 
 	private fun adjustStreamViewAspect() = adjustSurfaceViewAspect()
 
-	override fun dispatchKeyEvent(event: KeyEvent) = viewModel.input.dispatchKeyEvent(event) || super.dispatchKeyEvent(event)
+	override fun dispatchKeyEvent(event: KeyEvent): Boolean
+	{
+		if(viewModel.session.state.value == StreamStateConnecting
+			&& (event.keyCode == KeyEvent.KEYCODE_BACK || event.keyCode == KeyEvent.KEYCODE_BUTTON_B))
+		{
+			// "Retour pour annuler": nothing to protect yet, so Back (or B) leaves at once
+			if(event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0)
+				finish()
+			return true
+		}
+		return viewModel.input.dispatchKeyEvent(event) || super.dispatchKeyEvent(event)
+	}
+
+	override fun dispatchTouchEvent(ev: MotionEvent): Boolean
+	{
+		// the touch controls come back on the first touch, on touch devices only
+		if(ev.actionMasked == MotionEvent.ACTION_DOWN && viewModel.hasTouchscreen && !menu.isOpen
+			&& ev.isFromSource(InputDevice.SOURCE_TOUCHSCREEN))
+			viewModel.setGamepadUsed(false)
+		return super.dispatchTouchEvent(ev)
+	}
+
 	override fun onGenericMotionEvent(event: MotionEvent) = viewModel.input.onGenericMotionEvent(event) || super.onGenericMotionEvent(event)
 }
-
-enum class TransformMode
-{
-	FIT,
-	STRETCH,
-	ZOOM;
-
-	companion object
-	{
-		fun fromButton(displayModeButtonId: Int)
-			= when (displayModeButtonId)
-			{
-				R.id.display_mode_stretch_button -> STRETCH
-				R.id.display_mode_zoom_button -> ZOOM
-				else -> FIT
-			}
-	}
-}
-
-class TextureViewTransform(private val videoProfile: ConnectVideoProfile, private val textureView: TextureView)
-{
-	private val contentWidth : Float get() = videoProfile.width.toFloat()
-	private val contentHeight : Float get() = videoProfile.height.toFloat()
-	val viewWidth : Float get() = textureView.width.toFloat()
-	val viewHeight : Float get() = textureView.height.toFloat()
-	private val contentAspect : Float get() =  contentHeight / contentWidth
-
-	fun resolutionFor(mode: TransformMode): Resolution
-		= when(mode)
-		{
-			TransformMode.STRETCH -> strechedResolution
-			TransformMode.ZOOM -> zoomedResolution
-			TransformMode.FIT -> normalResolution
-		}
-
-	private val strechedResolution get() = Resolution(viewWidth, viewHeight)
-
-	private val zoomedResolution get() =
-		if(viewHeight > viewWidth * contentAspect)
-		{
-			val zoomFactor = viewHeight / contentHeight
-			Resolution(contentWidth * zoomFactor, viewHeight)
-		}
-		else
-		{
-			val zoomFactor = viewWidth / contentWidth
-			Resolution(viewWidth, contentHeight * zoomFactor)
-		}
-
-	private val normalResolution get() =
-		if(viewHeight > viewWidth * contentAspect)
-			Resolution(viewWidth, viewWidth * contentAspect)
-		else
-			Resolution(viewHeight / contentAspect, viewHeight)
-}
-
-
-data class Resolution(val width: Float, val height: Float)

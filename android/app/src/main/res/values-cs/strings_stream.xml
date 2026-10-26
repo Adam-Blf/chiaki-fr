@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stream_menu_title">Herní nabídka</string>
+    <string name="stream_menu_stats">Statistiky</string>
+    <string name="stream_menu_display_mode">Zobrazení</string>
+    <string name="stream_display_mode_fit">Přizpůsobit</string>
+    <string name="stream_display_mode_zoom">Přiblížit</string>
+    <string name="stream_display_mode_stretch">Roztáhnout</string>
+    <string name="stream_menu_resume">Pokračovat ve hře</string>
+    <string name="stream_menu_quit">Ukončit hru</string>
+    <string name="stream_menu_hint">A: OK, B: zavřít</string>
+    <string name="stream_connecting_title">Připojování k %1$s...</string>
+    <string name="stream_connecting_hint">Stiskněte Zpět pro zrušení</string>
+    <string name="stream_stats_format">%1$s fps | %2$s Mbit/s | %3$s ms | dekódování %4$s ms | ztráta %5$s %%</string>
+    <string name="stream_stats_diag_ok">Diagnostika: OK</string>
+    <string name="stream_stats_diag_network">Diagnostika: síť</string>
+    <string name="stream_stats_diag_decoder">Diagnostika: dekodér</string>
+    <string name="stream_menu_sleep">Uspat konzoli</string>
+</resources>

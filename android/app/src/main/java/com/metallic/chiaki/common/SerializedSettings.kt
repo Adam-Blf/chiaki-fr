@@ -158,7 +158,7 @@ fun importSettingsFromUri(activity: Activity, uri: Uri, scope: CoroutineScope)
 
 	try
 	{
-		val inputStream = activity.contentResolver.openInputStream(uri) ?: throw IOException()
+		val inputStream = activity.contentResolver.openInputStream(uri) ?: throw IOException(activity.getString(R.string.import_error_unreadable))
 		val buffer = inputStream.source().buffer()
 		val reader = JsonReader.of(buffer)
 		val adapter = moshi().serializedSettingsAdapter()
@@ -180,13 +180,13 @@ fun importSettingsFromUri(activity: Activity, uri: Uri, scope: CoroutineScope)
 		reader.endObject()
 
 		if(format == null || version == null || settingsValue == null)
-			throw IOException("Missing format, version or settings from JSON")
+			throw IOException(activity.getString(R.string.import_error_missing_fields))
 		if(format != FORMAT)
-			throw IOException("Value of format is invalid")
+			throw IOException(activity.getString(R.string.import_error_format))
 		if(version != VERSION) // Add migrations here when necessary
-			throw IOException("Value of version is invalid")
+			throw IOException(activity.getString(R.string.import_error_version))
 
-		val settings = adapter.fromJsonValue(settingsValue) ?: throw JsonDataException("Failed to parse Settings JSON")
+		val settings = adapter.fromJsonValue(settingsValue) ?: throw JsonDataException(activity.getString(R.string.import_error_parse))
 		Log.i("SerializedSettings", "would import: $settings")
 
 		MaterialAlertDialogBuilder(activity)
@@ -195,13 +195,13 @@ fun importSettingsFromUri(activity: Activity, uri: Uri, scope: CoroutineScope)
 					if(it.isEmpty())
 						"-"
 					else
-						it.joinToString(separator = "") { host -> "\n - ${host.serverNickname ?: "?"} / ${host.serverMac}" }
+						it.joinToString(separator = "") { host -> "\n - ${host.serverNickname ?: activity.getString(R.string.import_host_unknown_name)} / ${host.serverMac}" }
 				},
 				settings.manualHosts.let {
 					if(it.isEmpty())
 						"-"
 					else
-						it.joinToString(separator = "") { host -> "\n - ${host.host} / ${host.serverMac ?: "unregistered"}" }
+						it.joinToString(separator = "") { host -> "\n - ${host.host} / ${host.serverMac ?: activity.getString(R.string.import_host_unregistered)}" }
 				}
 			))
 			.setTitle(R.string.alert_title_import)

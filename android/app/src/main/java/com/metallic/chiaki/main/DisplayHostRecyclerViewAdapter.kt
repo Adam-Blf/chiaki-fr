@@ -2,27 +2,40 @@
 
 package com.metallic.chiaki.main
 
-import android.util.Log
+import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
-import android.widget.PopupMenu
-import androidx.core.view.isGone
-import androidx.core.view.isVisible
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
+import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.metallic.chiaki.R
 import com.metallic.chiaki.common.DiscoveredDisplayHost
 import com.metallic.chiaki.common.DisplayHost
 import com.metallic.chiaki.common.ManualDisplayHost
-import com.metallic.chiaki.common.ext.inflate
+import com.metallic.chiaki.common.ext.enableOkLongPress
 import com.metallic.chiaki.databinding.ItemDisplayHostBinding
-import com.metallic.chiaki.lib.DiscoveryHost
 
+/**
+ * Identity is type + id + host (the manual entry id for manual consoles), so a discovery refresh
+ * updates the card in place instead of replacing it, and the D-pad focus stays where it was.
+ */
 class DisplayHostDiffCallback(val old: List<DisplayHost>, val new: List<DisplayHost>): DiffUtil.Callback()
 {
-	override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) = (old[oldItemPosition] == new[newItemPosition])
+	override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean
+	{
+		val a = old[oldItemPosition]
+		val b = new[newItemPosition]
+		return when
+		{
+			a is ManualDisplayHost && b is ManualDisplayHost -> a.manualHost.id == b.manualHost.id
+			a is DiscoveredDisplayHost && b is DiscoveredDisplayHost -> a.id == b.id && a.host == b.host
+			else -> false
+		}
+	}
+
 	override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) = (old[oldItemPosition] == new[newItemPosition])
 	override fun getOldListSize() = old.size
 	override fun getNewListSize() = new.size
@@ -30,9 +43,7 @@ class DisplayHostDiffCallback(val old: List<DisplayHost>, val new: List<DisplayH
 
 class DisplayHostRecyclerViewAdapter(
 	val clickCallback: (DisplayHost) -> Unit,
-	val wakeupCallback: (DisplayHost) -> Unit,
-	val editCallback: (DisplayHost) -> Unit,
-	val deleteCallback: (DisplayHost) -> Unit
+	val longClickCallback: (DisplayHost) -> Unit
 ): RecyclerView.Adapter<DisplayHostRecyclerViewAdapter.ViewHolder>()
 {
 	var hosts: List<DisplayHost> = listOf()
@@ -42,6 +53,11 @@ class DisplayHostRecyclerViewAdapter(
 			field = value
 			diff.dispatchUpdatesTo(this)
 		}
+
+	private companion object
+	{
+		const val DETAILS_FADE_MS = 150L
+	}
 
 	class ViewHolder(val binding: ItemDisplayHostBinding): RecyclerView.ViewHolder(binding.root)
 
@@ -54,71 +70,53 @@ class DisplayHostRecyclerViewAdapter(
 	{
 		val context = holder.itemView.context
 		val host = hosts[position]
+		val status = host.status
+		val statusColor = ContextCompat.getColor(context, status.color)
 		holder.binding.also {
-			it.nameTextView.text = host.name
+			it.consoleTypeTextView.setText(if(host.isPS5) R.string.console_type_ps5 else R.string.console_type_ps4)
+			it.nameTextView.text = host.name ?: host.host
 			it.hostTextView.text = context.getString(R.string.display_host_host, host.host)
-			val id = host.id
-			it.idTextView.text =
-				if(id != null)
-					context.getString(
-						if(host.isRegistered)
-							R.string.display_host_id_registered
-						else
-							R.string.display_host_id_unregistered,
-						id)
-				else
-					""
-			it.bottomInfoTextView.text = (host as? DiscoveredDisplayHost)?.discoveredHost?.let { discoveredHost ->
+
+			it.stateChipTextView.setText(status.label)
+			it.stateChipTextView.setTextColor(statusColor)
+			it.stateChipTextView.backgroundTintList = ColorStateList.valueOf(ColorUtils.setAlphaComponent(statusColor, 0x2E))
+			it.stateChipTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(status.icon, 0, 0, 0)
+			TextViewCompat.setCompoundDrawableTintList(it.stateChipTextView, ColorStateList.valueOf(statusColor))
+
+			val runningApp = (host as? DiscoveredDisplayHost)?.discoveredHost?.let { discoveredHost ->
 				if(discoveredHost.runningAppName != null || discoveredHost.runningAppTitleid != null)
 					context.getString(R.string.display_host_app_title_id, discoveredHost.runningAppName ?: "", discoveredHost.runningAppTitleid ?: "")
 				else
-					""
-			} ?: ""
-			it.discoveredIndicatorLayout.visibility = if(host is DiscoveredDisplayHost) View.VISIBLE else View.GONE
-			it.stateIndicatorImageView.setImageResource(
-				when
-				{
-					host is DiscoveredDisplayHost -> when(host.discoveredHost.state)
-					{
-						DiscoveryHost.State.STANDBY -> if(host.isPS5) R.drawable.ic_console_ps5_standby else R.drawable.ic_console_standby
-						DiscoveryHost.State.READY -> if(host.isPS5) R.drawable.ic_console_ps5_ready else R.drawable.ic_console_ready
-						else -> if(host.isPS5) R.drawable.ic_console_ps5 else R.drawable.ic_console
-					}
-					host.isPS5 -> R.drawable.ic_console_ps5
-					else -> R.drawable.ic_console
-				}
-			)
-			it.root.setOnClickListener { clickCallback(host) }
+					null
+			}
+			it.bottomInfoTextView.text = runningApp ?: ""
+			it.bottomInfoTextView.visibility = if(runningApp != null) View.VISIBLE else View.GONE
 
-			val canWakeup = host.registeredHost != null
-			val canEditDelete = host is ManualDisplayHost
-			if(canWakeup || canEditDelete)
-			{
-				it.menuButton.isVisible = true
-				it.menuButton.setOnClickListener { _ ->
-					val menu = PopupMenu(context, it.menuButton)
-					menu.menuInflater.inflate(R.menu.display_host, menu.menu)
-					menu.menu.findItem(R.id.action_wakeup).isVisible = canWakeup
-					menu.menu.findItem(R.id.action_edit).isVisible = canEditDelete
-					menu.menu.findItem(R.id.action_delete).isVisible = canEditDelete
-					menu.setOnMenuItemClickListener { menuItem ->
-						when(menuItem.itemId)
-						{
-							R.id.action_wakeup -> wakeupCallback(host)
-							R.id.action_edit -> editCallback(host)
-							R.id.action_delete -> deleteCallback(host)
-							else -> return@setOnMenuItemClickListener false
-						}
-						true
-					}
-					menu.show()
-				}
+			it.actionTextView.setText(status.action)
+
+			it.root.setOnClickListener { _ -> clickCallback(host) }
+			it.root.setOnLongClickListener { _ ->
+				longClickCallback(host)
+				true
 			}
+			// Remote and gamepad: a held OK opens the actions, a short OK connects, never both
+			it.root.enableOkLongPress()
+
+			// Address, running app and action only show on the focused tile
+			it.setDetailsShown(it.root.hasFocus(), false)
+			it.root.setOnFocusChangeListener { _, focused -> it.setDetailsShown(focused, true) }
+		}
+	}
+
+	private fun ItemDisplayHostBinding.setDetailsShown(shown: Boolean, animate: Boolean)
+	{
+		val alpha = if(shown) 1f else 0f
+		listOf(hostTextView, bottomInfoTextView, actionTextView).forEach { view ->
+			view.animate().cancel()
+			if(animate)
+				view.animate().alpha(alpha).setDuration(DETAILS_FADE_MS).start()
 			else
-			{
-				it.menuButton.isGone = true
-				it.menuButton.setOnClickListener(null)
-			}
+				view.alpha = alpha
 		}
 	}
 }

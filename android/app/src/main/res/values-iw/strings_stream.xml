@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stream_menu_title">תפריט משחק</string>
+    <string name="stream_menu_stats">נתונים</string>
+    <string name="stream_menu_display_mode">תצוגה</string>
+    <string name="stream_display_mode_fit">התאמה</string>
+    <string name="stream_display_mode_zoom">זום</string>
+    <string name="stream_display_mode_stretch">מתיחה</string>
+    <string name="stream_menu_resume">חזרה למשחק</string>
+    <string name="stream_menu_quit">יציאה מהמשחק</string>
+    <string name="stream_menu_hint">A: אישור, B: סגירה</string>
+    <string name="stream_connecting_title">מתחבר אל %1$s...</string>
+    <string name="stream_connecting_hint">לחצו חזרה לביטול</string>
+    <string name="stream_stats_format">%1$s fps | %2$s Mbit/s | %3$s ms | פענוח %4$s ms | אובדן %5$s %%</string>
+    <string name="stream_stats_diag_ok">אבחון: תקין</string>
+    <string name="stream_stats_diag_network">אבחון: רשת</string>
+    <string name="stream_stats_diag_decoder">אבחון: מפענח</string>
+    <string name="stream_menu_sleep">העברת הקונסולה למצב מנוחה</string>
+</resources>

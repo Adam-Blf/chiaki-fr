@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stream_menu_title">게임 메뉴</string>
+    <string name="stream_menu_stats">통계</string>
+    <string name="stream_menu_display_mode">화면</string>
+    <string name="stream_display_mode_fit">맞춤</string>
+    <string name="stream_display_mode_zoom">확대</string>
+    <string name="stream_display_mode_stretch">늘이기</string>
+    <string name="stream_menu_resume">게임 계속</string>
+    <string name="stream_menu_quit">게임 종료</string>
+    <string name="stream_menu_hint">A: 확인, B: 닫기</string>
+    <string name="stream_connecting_title">%1$s에 연결 중...</string>
+    <string name="stream_connecting_hint">뒤로를 눌러 취소</string>
+    <string name="stream_stats_format">%1$s fps | %2$s Mbit/s | %3$s ms | 디코딩 %4$s ms | 손실 %5$s %%</string>
+    <string name="stream_stats_diag_ok">진단: 정상</string>
+    <string name="stream_stats_diag_network">진단: 네트워크</string>
+    <string name="stream_stats_diag_decoder">진단: 디코더</string>
+    <string name="stream_menu_sleep">콘솔 대기 모드로 전환</string>
+</resources>

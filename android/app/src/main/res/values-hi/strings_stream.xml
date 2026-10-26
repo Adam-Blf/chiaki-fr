@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stream_menu_title">गेम मेनू</string>
+    <string name="stream_menu_stats">आँकड़े</string>
+    <string name="stream_menu_display_mode">डिस्प्ले</string>
+    <string name="stream_display_mode_fit">फ़िट</string>
+    <string name="stream_display_mode_zoom">ज़ूम</string>
+    <string name="stream_display_mode_stretch">स्ट्रेच</string>
+    <string name="stream_menu_resume">गेम जारी रखें</string>
+    <string name="stream_menu_quit">गेम से बाहर निकलें</string>
+    <string name="stream_menu_hint">A: OK, B: बंद करें</string>
+    <string name="stream_connecting_title">%1$s से कनेक्ट हो रहा है...</string>
+    <string name="stream_connecting_hint">रद्द करने के लिए Back दबाएँ</string>
+    <string name="stream_stats_format">%1$s fps | %2$s Mbit/s | %3$s ms | डिकोडिंग %4$s ms | लॉस %5$s %%</string>
+    <string name="stream_stats_diag_ok">जाँच: OK</string>
+    <string name="stream_stats_diag_network">जाँच: नेटवर्क</string>
+    <string name="stream_stats_diag_decoder">जाँच: डिकोडर</string>
+    <string name="stream_menu_sleep">कंसोल को स्लीप मोड में डालें</string>
+</resources>

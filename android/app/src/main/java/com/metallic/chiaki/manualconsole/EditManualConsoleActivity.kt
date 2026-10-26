@@ -8,17 +8,17 @@ import android.view.View
 import android.view.Window
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.metallic.chiaki.R
 import com.metallic.chiaki.common.RegisteredHost
+import com.metallic.chiaki.common.TvActivity
 import com.metallic.chiaki.common.ext.RevealActivity
 import com.metallic.chiaki.common.ext.viewModelFactory
 import com.metallic.chiaki.common.getDatabase
 import com.metallic.chiaki.databinding.ActivityEditManualBinding
 
-class EditManualConsoleActivity: AppCompatActivity(), RevealActivity
+class EditManualConsoleActivity: TvActivity(), RevealActivity
 {
 	companion object
 	{
@@ -71,6 +71,7 @@ class EditManualConsoleActivity: AppCompatActivity(), RevealActivity
 		})
 
 		binding.saveButton.setOnClickListener { saveHost() }
+		binding.hostEditText.requestFocus()
 	}
 
 	private fun titleForRegisteredHost(registeredHost: RegisteredHost?) =

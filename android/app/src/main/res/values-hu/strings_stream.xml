@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stream_menu_title">Játékmenü</string>
+    <string name="stream_menu_stats">Statisztikák</string>
+    <string name="stream_menu_display_mode">Megjelenítés</string>
+    <string name="stream_display_mode_fit">Igazítás</string>
+    <string name="stream_display_mode_zoom">Nagyítás</string>
+    <string name="stream_display_mode_stretch">Nyújtás</string>
+    <string name="stream_menu_resume">Játék folytatása</string>
+    <string name="stream_menu_quit">Kilépés a játékból</string>
+    <string name="stream_menu_hint">A: OK, B: bezárás</string>
+    <string name="stream_connecting_title">Csatlakozás: %1$s...</string>
+    <string name="stream_connecting_hint">Megszakítás: Vissza gomb</string>
+    <string name="stream_stats_format">%1$s fps | %2$s Mbit/s | %3$s ms | dekódolás %4$s ms | vesztés %5$s %%</string>
+    <string name="stream_stats_diag_ok">Diagnózis: OK</string>
+    <string name="stream_stats_diag_network">Diagnózis: hálózat</string>
+    <string name="stream_stats_diag_decoder">Diagnózis: dekóder</string>
+    <string name="stream_menu_sleep">Konzol pihenő módba</string>
+</resources>

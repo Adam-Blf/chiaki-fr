@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stream_menu_title">Meniu joc</string>
+    <string name="stream_menu_stats">Statistici</string>
+    <string name="stream_menu_display_mode">Afișare</string>
+    <string name="stream_display_mode_fit">Încadrare</string>
+    <string name="stream_display_mode_zoom">Zoom</string>
+    <string name="stream_display_mode_stretch">Întindere</string>
+    <string name="stream_menu_resume">Reia jocul</string>
+    <string name="stream_menu_quit">Ieși din joc</string>
+    <string name="stream_menu_hint">A: OK, B: închide</string>
+    <string name="stream_connecting_title">Conectare la %1$s...</string>
+    <string name="stream_connecting_hint">Apasă Înapoi pentru anulare</string>
+    <string name="stream_stats_format">%1$s fps | %2$s Mbit/s | %3$s ms | decodare %4$s ms | pierderi %5$s %%</string>
+    <string name="stream_stats_diag_ok">Diagnostic: OK</string>
+    <string name="stream_stats_diag_network">Diagnostic: rețea</string>
+    <string name="stream_stats_diag_decoder">Diagnostic: decodor</string>
+    <string name="stream_menu_sleep">Trece consola în repaus</string>
+</resources>

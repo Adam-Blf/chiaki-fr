@@ -225,6 +225,7 @@ JNIEXPORT void JNICALL JNI_FCN(sessionCreate)(JNIEnv *env, jobject obj, jobject 
 	jstring host_string = E->GetObjectField(env, connect_info_obj, E->GetFieldID(env, connect_info_class, "host", "Ljava/lang/String;"));
 	jbyteArray regist_key_array = E->GetObjectField(env, connect_info_obj, E->GetFieldID(env, connect_info_class, "registKey", "[B"));
 	jbyteArray morning_array = E->GetObjectField(env, connect_info_obj, E->GetFieldID(env, connect_info_class, "morning", "[B"));
+	jboolean low_latency = E->GetBooleanField(env, connect_info_obj, E->GetFieldID(env, connect_info_class, "lowLatency", "Z"));
 	jobject connect_video_profile_obj = E->GetObjectField(env, connect_info_obj, E->GetFieldID(env, connect_info_class, "videoProfile", "L"BASE_PACKAGE"/ConnectVideoProfile;"));
 	jclass connect_video_profile_class = E->GetObjectClass(env, connect_video_profile_obj);
 
@@ -271,6 +272,8 @@ JNIEXPORT void JNICALL JNI_FCN(sessionCreate)(JNIEnv *env, jobject obj, jobject 
 	connect_info.video_profile.codec = (ChiakiCodec)target_value;
 
 	connect_info.video_profile_auto_downgrade = true;
+	// report real loss to the console so it can adapt bitrate on lossy Wi-Fi (same value as the Qt GUI)
+	connect_info.packet_loss_max = 0.05;
 
 	session = CHIAKI_NEW(AndroidChiakiSession);
 	if(!session)
@@ -281,7 +284,7 @@ JNIEXPORT void JNICALL JNI_FCN(sessionCreate)(JNIEnv *env, jobject obj, jobject 
 	memset(session, 0, sizeof(AndroidChiakiSession));
 	session->log = log;
 	err = android_chiaki_video_decoder_init(&session->video_decoder, log, connect_info.video_profile.width, connect_info.video_profile.height,
-			connect_info.ps5 ? connect_info.video_profile.codec : CHIAKI_CODEC_H264);
+			connect_info.ps5 ? connect_info.video_profile.codec : CHIAKI_CODEC_H264, low_latency);
 	if(err != CHIAKI_ERR_SUCCESS)
 	{
 		free(session);
@@ -298,7 +301,7 @@ JNIEXPORT void JNICALL JNI_FCN(sessionCreate)(JNIEnv *env, jobject obj, jobject 
 		goto beach;
 	}
 
-	session->audio_output = android_chiaki_audio_output_new(log);
+	session->audio_output = android_chiaki_audio_output_new(log, low_latency);
 
 	android_chiaki_audio_decoder_set_cb(&session->audio_decoder, android_chiaki_audio_output_settings, android_chiaki_audio_output_frame, session->audio_output);
 
@@ -390,6 +393,13 @@ JNIEXPORT jint JNICALL JNI_FCN(sessionStart)(JNIEnv *env, jobject obj, jlong ptr
 	return chiaki_session_start(&session->session);
 }
 
+JNIEXPORT jint JNICALL JNI_FCN(sessionGotoBed)(JNIEnv *env, jobject obj, jlong ptr)
+{
+	AndroidChiakiSession *session = (AndroidChiakiSession *)ptr;
+	CHIAKI_LOGI(session->log, "Goto Bed JNI Session");
+	return chiaki_session_goto_bed(&session->session);
+}
+
 JNIEXPORT jint JNICALL JNI_FCN(sessionStop)(JNIEnv *env, jobject obj, jlong ptr)
 {
 	AndroidChiakiSession *session = (AndroidChiakiSession *)ptr;
@@ -459,6 +469,32 @@ JNIEXPORT void JNICALL JNI_FCN(sessionSetLoginPin)(JNIEnv *env, jobject obj, jlo
 	const char *pin = E->GetStringUTFChars(env, pin_java, NULL);
 	chiaki_session_set_login_pin(&session->session, (const uint8_t *)pin, strlen(pin));
 	E->ReleaseStringUTFChars(env, pin_java, pin);
+}
+
+JNIEXPORT jobject JNICALL JNI_FCN(sessionGetStats)(JNIEnv *env, jobject obj, jlong ptr)
+{
+	AndroidChiakiSession *session = (AndroidChiakiSession *)ptr;
+	AndroidChiakiVideoStats video_stats = { 0 };
+	float bitrate_mbps = 0.0f;
+	float packet_loss_percent = 0.0f;
+	float rtt_ms = 0.0f;
+	if(session)
+	{
+		// Plain reads of values written by library threads, a torn or slightly old value is fine for a display
+		android_chiaki_video_decoder_get_stats(&session->video_decoder, &video_stats);
+		bitrate_mbps = (float)session->session.stream_connection.measured_bitrate;
+		packet_loss_percent = (float)(session->session.stream_connection.congestion_control.packet_loss * 100.0);
+		rtt_ms = (float)session->session.rtt_us / 1000.0f;
+	}
+	jclass stats_class = E->FindClass(env, BASE_PACKAGE"/StreamStats");
+	if(!stats_class)
+		return NULL;
+	jmethodID stats_ctor = E->GetMethodID(env, stats_class, "<init>", "(FFFFFJJ)V");
+	if(!stats_ctor)
+		return NULL;
+	return E->NewObject(env, stats_class, stats_ctor,
+			(jfloat)video_stats.fps, (jfloat)video_stats.decode_ms, (jfloat)bitrate_mbps, (jfloat)packet_loss_percent, (jfloat)rtt_ms,
+			(jlong)video_stats.frames_dropped, (jlong)video_stats.frames_lost);
 }
 
 typedef struct android_discovery_service_t
