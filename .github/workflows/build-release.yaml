@@ -1,8 +1,8 @@
 name: Create chiaki-ng release
 
+# Chiaki FR: upstream release machinery, manual dispatch only in this fork.
 on:
-  push:
-    tags: [ 'v*.*.*' ]
+  workflow_dispatch:
 
 jobs:
   create-release:

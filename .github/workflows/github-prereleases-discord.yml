@@ -1,7 +1,7 @@
 name: GitHub Releases to discord prerelease
+# Chiaki FR: upstream release machinery, manual dispatch only in this fork.
 on:
-  release:
-    types: [prereleased]
+  workflow_dispatch:
 
 jobs:
   github-releases-to-discord:
