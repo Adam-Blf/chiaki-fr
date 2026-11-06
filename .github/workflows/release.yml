@@ -1,0 +1,63 @@
+name: Release Chiaki FR
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Check tag matches VERSION
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          SRC="$(tr -d '[:space:]' < VERSION)"
+          if [ "$TAG" != "$SRC" ]; then
+            echo "::error::tag v$TAG does not match VERSION $SRC"
+            exit 1
+          fi
+          echo "VERSION=$SRC" >> "$GITHUB_ENV"
+
+      - name: Extract CHANGELOG section
+        run: |
+          awk -v v="$VERSION" '
+            /^## / {
+              if (found) exit
+              line = $0
+              sub(/^## \[?/, "", line)
+              split(line, parts, /[] ]/)
+              if (parts[1] == v) { found = 1; next }
+            }
+            found { print }
+          ' CHANGELOG.md > release-notes.md
+          if [ ! -s release-notes.md ]; then
+            echo "::error::no CHANGELOG section for $VERSION"
+            exit 1
+          fi
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "Chiaki FR $GITHUB_REF_NAME" \
+            --notes-file release-notes.md
+
+      - name: Build arm64 debug APK with the Docker toolchain
+        run: |
+          docker build -t chiaki-ng-build scripts/android-docker
+          docker run --rm -v "$PWD":/src chiaki-ng-build ./gradlew --no-daemon assembleDebug
+          cp android/app/build/outputs/apk/debug/app-debug.apk "chiaki-fr-$VERSION-arm64-debug.apk"
+
+      - name: Attach APK to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$GITHUB_REF_NAME" "chiaki-fr-$VERSION-arm64-debug.apk"
